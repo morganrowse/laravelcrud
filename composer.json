@@ -8,19 +8,13 @@
         {
             "name": "Morgan Rowse",
             "email": "morgan.rowse@gmail.com",
-            "homepage": "http://morganrowse.co.za"
+            "homepage": "http://morganrowse.co.za",
+            "role": "Developer"
         }
     ],
     "autoload": {
         "psr-4": {
             "MorganRowse\\LaravelCrud\\": "src/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "MorganRowse\\LaravelCrud\\ServiceProvider"
-            ]
         }
     }
 }

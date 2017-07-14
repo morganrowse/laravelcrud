@@ -1,0 +1,20 @@
+<h1>%model_plural%</h1>
+
+<table>
+    <thead>
+        <tr>
+            %model_table_head%
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    @forelse(%model_items% as %model_item%)
+        <tr>
+            %model_item_table_row%
+        </tr>
+    @empty
+        <tr>
+            <td colspan="100%">No data ex</td>
+        </tr>
+    @endforelse
+</table>

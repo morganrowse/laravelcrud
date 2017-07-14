@@ -1,0 +1,3 @@
+@extends('app.layout')
+
+<h1>{{$model_plural}}</h1>

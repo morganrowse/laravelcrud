@@ -1,0 +1,13 @@
+<h1>{{$model_plural}}</h1>
+
+<table>
+    @forelse($model_items as $model_item)
+        <tr>
+            <td>row</td>
+        </tr>
+    @empty
+        <tr>
+            <td>row</td>
+        </tr>
+    @endforelse
+</table>
