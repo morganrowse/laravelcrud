@@ -1,6 +1,4 @@
-<?php
-
-namespace App\Console\Commands;
+<?php namespace M;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
