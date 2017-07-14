@@ -1,0 +1,17 @@
+{
+    "name": "morganrowse/laravelcrud",
+    "description": "Generate routing views and controllers from a model ",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Morgan Rowse",
+            "email": "morgan.rowse@gmail.com",
+            "homepage": "https://morganrowse.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "MorganRowse\\GenerateCrud\\": "src/"
+        }
+    }
+}
