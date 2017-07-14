@@ -10,7 +10,7 @@ class LaravelCrudServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        //
+        //boot function
     }
 
     public function register()
