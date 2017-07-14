@@ -1,4 +1,4 @@
-# laravelcrud
+# Laravel CRUD
 
 This composer package adds artisan commands which create views, controllers and resource routing for crud operation based off a database  table schema.
 
