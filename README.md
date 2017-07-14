@@ -19,3 +19,30 @@ Next, add the `ArtisanViewServiceProvider` to your `providers` array in `config/
     MorganRowse\LaravelCrud\ServiceProvider::class
 ];
 ```
+
+## Usage
+
+First have your database setup as desired following laravel naming convention.
+
+Next run the command via artisan
+
+```bash
+$ php artisan make:crud posts
+```
+
+This will create 
+
+├── 
+├── app
+|   ├── Http
+|       └── Controllers
+|           └── PhotoController.php
+├── resources
+|   ├── views
+|       └── posts
+|           └── create.blade.php
+|           └── edit.blade.php
+|           └── index.blade.php
+|           └── show.blade.php
+
+as well as adding the route resource to your routes file
