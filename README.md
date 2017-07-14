@@ -2,7 +2,9 @@
 
 This composer package adds artisan commands which create views, controllers and resource routing for crud operation based off a database  table schema.
 
-Add to your app providers
+##Installation
+
+First add the package via composer
 
 ```bash
 $ composer require morganrowse/laravelcrud
