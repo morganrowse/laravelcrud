@@ -1,8 +1,5 @@
-<?php
+<?php namespace MorganRowse\LaravelCrud;
 
-namespace App\Providers;
-
-use App\Console\Commands\MakeCrud;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
@@ -10,7 +7,7 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->commands([
-            MakeCrud::class,
+            Commmands\MakeCrud::class,
         ]);
     }
 }

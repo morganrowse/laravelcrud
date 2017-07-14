@@ -12,9 +12,6 @@
             "role": "Developer"
         }
     ],
-    "require": {
-        "laravel/framework": "5.4.*"
-    },
     "autoload": {
         "psr-4": {
             "MorganRowse\\LaravelCrud\\": "src/"
