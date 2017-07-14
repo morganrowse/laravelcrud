@@ -3,16 +3,10 @@
 namespace App\Providers;
 
 use App\Console\Commands\MakeCrud;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
-class LaravelCrudServiceProvider extends ServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
-
-    public function boot()
-    {
-        //boot function
-    }
-
     public function register()
     {
         $this->commands([
