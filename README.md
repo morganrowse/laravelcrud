@@ -10,7 +10,7 @@ First add the package via composer
 $ composer require morganrowse/laravelcrud
 ```
 
-Next, add the `ArtisanViewServiceProvider` to your `providers` array in `config/app.php`:
+Next, add the ServiceProvider to your `providers` array in `config/app.php`:
 
 ```php
 // config/app.php
