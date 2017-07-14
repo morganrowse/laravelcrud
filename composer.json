@@ -12,6 +12,10 @@
             "role": "Developer"
         }
     ],
+    "require": {
+        "laravel/framework": "5.4.*",
+        "doctrine/dbal": "^2.5"
+    },
     "autoload": {
         "psr-4": {
             "MorganRowse\\LaravelCrud\\": "src/"
