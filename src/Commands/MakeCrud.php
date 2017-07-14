@@ -17,6 +17,6 @@ class MakeCrud extends Command
 
     public function handle()
     {
-        Storage::disk('views')->put('hello.blade.php',"woaw");
+        Storage::disk('views')->put('hello.blade.php',"woaw!");
     }
 }
