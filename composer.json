@@ -1,17 +1,24 @@
 {
     "name": "morganrowse/laravelcrud",
-    "description": "Generate routing views and controllers from a model ",
+    "type": "artisan command",
+    "description": "Generate routing, views and controllers from a model",
+    "keywords": ["laravel","artisan","crud"],
+    "homepage": "https://github.com/morganrowse/laravelcrud",
     "license": "MIT",
     "authors": [
         {
             "name": "Morgan Rowse",
             "email": "morgan.rowse@gmail.com",
-            "homepage": "https://morganrowse.com"
+            "homepage": "http://morganrowse.co.za",
+            "role": "Developer"
         }
     ],
+    "require": {
+        "laravel/framework": "5.4.*"
+    },
     "autoload": {
-        "psr-4": {
-            "MorganRowse\\LaravelCrud\\": "src/"
+        "psr-0": {
+            "morganrowse\\laravelcrud||": "src/"
         }
     }
 }
