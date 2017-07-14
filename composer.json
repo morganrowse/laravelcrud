@@ -1,6 +1,5 @@
 {
     "name": "morganrowse/laravelcrud",
-    "type": "artisan command",
     "description": "Generate routing, views and controllers from a model",
     "keywords": ["laravel","artisan","crud"],
     "homepage": "https://github.com/morganrowse/laravelcrud",
