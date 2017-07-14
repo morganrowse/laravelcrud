@@ -16,8 +16,8 @@
         "laravel/framework": "5.4.*"
     },
     "autoload": {
-        "psr-0": {
-            "morganrowse\\laravelcrud\\": "src/"
+        "psr-4": {
+            "MorganRowse\\LaravelCrud\\": "src/"
         }
     }
 }
