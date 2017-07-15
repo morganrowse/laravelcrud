@@ -1,3 +1,15 @@
-@extends('app.layout')
+@extends('app')
 
-<h1>{{$model_plural}}</h1>
+@section('content')
+
+<h1>Create new %model_singular%</h1>
+
+<form method="POST" action="{{route('%model_create_route%')}}">
+{{ csrf_field() }}
+
+%model_form_fields%
+
+<button type="submit">Create</button>
+</form>
+
+@endsection

@@ -28,7 +28,7 @@ class MakeCrud extends Command
 
         $this->schema = DB::connection()->getDoctrineSchemaManager()->listTableColumns($this->model);
 
-        $this->model_view_path = "resources\\views\\" . $this->model;
+        $this->model_view_path = "resources\\views\\" . strtr($this->model, ['_' => '']);
         $this->makeDirectory($this->model_view_path);
 
         $this->makeController($this->getControllerContents());
@@ -56,22 +56,46 @@ class MakeCrud extends Command
 
     public function getControllerName()
     {
-        return ucwords(strtr($this->model, ['_' => ''])) . 'Controller';
+        return strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']) . 'Controller';
     }
 
     public function getControllerContents()
     {
-        return file_get_contents($this->stub_path . "\\controller.stub");
+        $contents = file_get_contents($this->stub_path . "\\controller.stub");
+
+        $search_replace = [
+            '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
+            '%model%' => $this->model,
+            '%model_view_path%' => strtr($this->model, ['_' => '']),
+            '%model_items%' => $this->model,
+            '%model_item%' => str_singular($this->model),
+        ];
+
+        return strtr($contents, $search_replace);
     }
 
     public function makeView($view_type, $contents)
     {
-        file_put_contents($this->model_view_path ."\\". $view_type . '.blade.php', $contents);
+        file_put_contents($this->model_view_path . "\\" . $view_type . '.blade.php', $contents);
     }
 
     public function getCreateViewContents()
     {
-        return file_get_contents($this->stub_path . "\\create.stub");
+        $contents = file_get_contents($this->stub_path . "\\create.stub");
+
+        $model_form_fields = '';
+
+        foreach ($this->schema as $column) {
+            $model_form_fields .= '<div><label>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</label><input name="'.$column->getName().'" type="' . $this->doctrineToHtmlInput($column->getType()) . '"></div>';
+        }
+
+        $search_replace = [
+            '%model_singular%' => strtr(str_singular($this->model), ['_' => ' ']),
+            '%model_form_fields%' => $model_form_fields,
+            '%model_create_route%' => strtr($this->model, ['_' => '']).'.store',
+        ];
+
+        return strtr($contents, $search_replace);
     }
 
     public function getEditViewContents()
@@ -86,16 +110,16 @@ class MakeCrud extends Command
         $model_table_head = '';
         $model_item_table_row = '';
 
-        $model_plural = ucfirst($this->model);
-        $model_items = strtolower($this->model);
-        $model_item = strtolower(str_singular($this->model));
+        $model_plural = strtr(ucfirst($this->model), ['_' => ' ']);
+        $model_items = $this->model;
+        $model_item = str_singular($this->model);
 
         foreach ($this->schema as $column) {
-            $model_table_head .= '<th>' . $column->getName() . '</th>';
+            $model_table_head .= '<th>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</th>';
             $model_item_table_row .= '<td>{{$' . $model_item . '->' . $column->getName() . '}}</td>';
         }
 
-        $model_item_table_row .= '<td><a href=" {{route(\"$model.show\",' . $model_item . '->id)}} "</td>';
+        $model_item_table_row .= '<td><a href="{{route(\'' . strtr($this->model, ['_' => '']) . '.show\',$' . $model_item . '->id)}}">View</a><a href="{{route(\'' . strtr($this->model, ['_' => '']) . '.edit\',$' . $model_item . '->id)}}">Edit</a><a href="{{route(\'' . strtr($this->model, ['_' => '']) . '.destroy\',$' . $model_item . '->id)}}">Delete</a></td>';
 
         $search_replace = [
             '%model_plural%' => $model_plural,
@@ -111,5 +135,23 @@ class MakeCrud extends Command
     public function getShowViewContents()
     {
         return file_get_contents($this->stub_path . "\\show.stub");
+    }
+
+    public function doctrineToHtmlInput($doctrine_type)
+    {
+        switch ($doctrine_type) {
+            case 'Integer':
+                return 'number';
+                break;
+            case 'String':
+                return 'text';
+                break;
+            case 'DateTime':
+                return 'datetime-local';
+                break;
+            default:
+                return $doctrine_type;
+                break;
+        }
     }
 }

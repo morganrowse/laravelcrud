@@ -1,3 +1,7 @@
+@extends('app')
+
+@section('content')
+
 <h1>%model_plural%</h1>
 
 <table>
@@ -18,3 +22,5 @@
         </tr>
     @endforelse
 </table>
+
+@endsection
