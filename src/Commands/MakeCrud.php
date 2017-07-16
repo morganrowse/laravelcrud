@@ -130,7 +130,7 @@ class MakeCrud extends Command
         $search_replace = [
             '%model_singular%' => strtr(str_singular($this->model), ['_' => ' ']),
             '%model_form_fields%' => $model_form_fields,
-            '%model_create_route%' => strtr($this->model, ['_' => '']) . '.store',
+            '%model_store_route%' => strtr($this->model, ['_' => '']) . '.store',
         ];
 
         return strtr($contents, $search_replace);
@@ -181,6 +181,7 @@ class MakeCrud extends Command
 
         $search_replace = [
             '%model_plural%' => $model_plural,
+            '%model_create_route%' => strtr($this->model, ['_' => '']) . '.create',
             '%model_items%' => '$' . $model_items,
             '%model_item%' => '$' . $model_item,
             '%model_table_head%' => $model_table_head,

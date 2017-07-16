@@ -3,6 +3,7 @@
 @section('content')
 
 <h1>%model_plural%</h1>
+<p><a href="{{route('%model_create_route%')}}">New..</a></p>
 
 <table>
     <thead>
