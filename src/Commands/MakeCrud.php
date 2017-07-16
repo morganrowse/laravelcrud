@@ -8,7 +8,7 @@ class MakeCrud extends Command
     protected $signature = 'make:crud {model}';
     protected $description = 'Generate crud routing, views and controllers from a model';
 
-    protected $stub_path, $view_path, $model_view_path, $controller_path, $schema, $model;
+    protected $stub_path, $view_path, $model_view_path, $model_path, $controller_path, $schema, $model;
 
     public function __construct()
     {
@@ -16,10 +16,10 @@ class MakeCrud extends Command
         $this->stub_path = base_path("vendor\\morganrowse\\laravelcrud\\src\\Stubs");
         $this->view_path = "resources\\views\\";
         $this->model_view_path = "";
+        $this->model_path = base_path("app\\");
         $this->controller_path = base_path("app\\Http\\Controllers\\");
         $this->schema = '';
         $this->model = '';
-
     }
 
     public function handle()
@@ -31,6 +31,7 @@ class MakeCrud extends Command
         $this->model_view_path = "resources\\views\\" . strtr($this->model, ['_' => '']);
         $this->makeDirectory($this->model_view_path);
 
+        $this->makeModel($this->getModelContents());
         $this->makeController($this->getControllerContents());
         $this->makeView('create', $this->getCreateViewContents());
         $this->makeView('edit', $this->getEditViewContents());
@@ -47,21 +48,47 @@ class MakeCrud extends Command
         return null;
     }
 
-    public function makeController($contents)
+    public function makeModel($contents)
     {
-        file_put_contents($this->controller_path . $this->getControllerName() . '.php', $contents);
+        file_put_contents($this->model_path . $this->getClassName() . '.php', $contents);
 
         return null;
     }
 
-    public function getControllerName()
+    public function getModelContents()
     {
-        return strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']) . 'Controller';
+        $contents = file_get_contents($this->stub_path . "\\model.stub");
+
+        $search_replace = [
+            '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
+        ];
+
+        return strtr($contents, $search_replace);
+    }
+
+    public function makeController($contents)
+    {
+        file_put_contents($this->controller_path . $this->getClassName() . 'Controller.php', $contents);
+
+        return null;
+    }
+
+    public function getClassName()
+    {
+        return strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']);
     }
 
     public function getControllerContents()
     {
         $contents = file_get_contents($this->stub_path . "\\controller.stub");
+
+        $model_fill_fields = '';
+
+        foreach ($this->schema as $column) {
+            $model_fill_fields .= '$' . str_singular($this->model).'->'.$column->getName().' = $request->input("'.$column->getName().'");';
+        }
+
+        $model_fill_fields .= '$' . str_singular($this->model).'->save();';
 
         $search_replace = [
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
@@ -69,6 +96,7 @@ class MakeCrud extends Command
             '%model_view_path%' => strtr($this->model, ['_' => '']),
             '%model_items%' => $this->model,
             '%model_item%' => str_singular($this->model),
+            '%model_fill_fields%' => $model_fill_fields,
         ];
 
         return strtr($contents, $search_replace);
@@ -86,13 +114,13 @@ class MakeCrud extends Command
         $model_form_fields = '';
 
         foreach ($this->schema as $column) {
-            $model_form_fields .= '<div><label>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</label><input name="'.$column->getName().'" type="' . $this->doctrineToHtmlInput($column->getType()) . '"></div>';
+            $model_form_fields .= '<div><label>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</label><input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '"></div>';
         }
 
         $search_replace = [
             '%model_singular%' => strtr(str_singular($this->model), ['_' => ' ']),
             '%model_form_fields%' => $model_form_fields,
-            '%model_create_route%' => strtr($this->model, ['_' => '']).'.store',
+            '%model_create_route%' => strtr($this->model, ['_' => '']) . '.store',
         ];
 
         return strtr($contents, $search_replace);
@@ -134,7 +162,13 @@ class MakeCrud extends Command
 
     public function getShowViewContents()
     {
-        return file_get_contents($this->stub_path . "\\show.stub");
+        $contents = file_get_contents($this->stub_path . "\\show.stub");
+
+        $search_replace = [
+            '%model_item%' => '$' . str_singular($this->model),
+        ];
+
+        return strtr($contents, $search_replace);
     }
 
     public function doctrineToHtmlInput($doctrine_type)
