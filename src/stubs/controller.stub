@@ -33,18 +33,22 @@ class %model_class%Controller extends Controller
         return view('%model_view_path%.show')->with(['%model_item%'=>$%model_item%]);
     }
 
-    public function edit($id)
+    public function edit(%model_class% $%model_item%)
+        {
+            return view('%model_view_path%.edit')->with(['%model_item%'=>$%model_item%]);
+        }
+
+    public function update(Request $request, %model_class% $%model_item%)
     {
-        //
+        %model_fill_fields%
+
+        return redirect()->route('%model_view_path%.index');
     }
 
-    public function update(Request $request, $id)
+    public function destroy(%model_class% $%model_item%)
     {
-        //
-    }
+        %model_destroy%
 
-    public function destroy($id)
-    {
-        //
+        return redirect()->route('%model_view_path%.index');
     }
 }

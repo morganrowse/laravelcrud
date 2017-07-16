@@ -2,18 +2,16 @@
 
 @section('content')
 
-<h1>{{$model_plural}}</h1>
+<h1>Edit %model_singular%</h1>
 
-<table>
-    @forelse($model_items as $model_item)
-        <tr>
-            <td>row</td>
-        </tr>
-    @empty
-        <tr>
-            <td>row</td>
-        </tr>
-    @endforelse
-</table>
+<form method="POST" action="{{route('%model_update_route%',$%model_item%)}}">
+
+{{method_field('PUT')}}
+{{csrf_field()}}
+
+%model_form_fields%
+
+<button type="submit">Update</button>
+</form>
 
 @endsection

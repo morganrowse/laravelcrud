@@ -59,8 +59,17 @@ class MakeCrud extends Command
     {
         $contents = file_get_contents($this->stub_path . "\\model.stub");
 
+        $model_relationship_functions = '';
+
+        foreach ($this->schema as $column) {
+            if (substr($column->getName(), -3) == '_id') {
+                $model_relationship_functions .= 'public function ' . lcfirst(strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => ''])) . '() { return $this->belongsTo(\'App\\' . strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => '']) . '\'); } ';
+            }
+        }
+
         $search_replace = [
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
+            '%model_relationship_functions%' => $model_relationship_functions,
         ];
 
         return strtr($contents, $search_replace);
@@ -85,10 +94,10 @@ class MakeCrud extends Command
         $model_fill_fields = '';
 
         foreach ($this->schema as $column) {
-            $model_fill_fields .= '$' . str_singular($this->model).'->'.$column->getName().' = $request->input("'.$column->getName().'");';
+            $model_fill_fields .= '$' . str_singular($this->model) . '->' . $column->getName() . ' = $request->input("' . $column->getName() . '");';
         }
 
-        $model_fill_fields .= '$' . str_singular($this->model).'->save();';
+        $model_fill_fields .= '$' . str_singular($this->model) . '->save();';
 
         $search_replace = [
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
@@ -97,6 +106,7 @@ class MakeCrud extends Command
             '%model_items%' => $this->model,
             '%model_item%' => str_singular($this->model),
             '%model_fill_fields%' => $model_fill_fields,
+            '%model_destroy%' => '$' . str_singular($this->model) . '->delete();'
         ];
 
         return strtr($contents, $search_replace);
@@ -128,7 +138,22 @@ class MakeCrud extends Command
 
     public function getEditViewContents()
     {
-        return file_get_contents($this->stub_path . "\\edit.stub");
+        $contents = file_get_contents($this->stub_path . "\\edit.stub");
+
+        $model_form_fields = '';
+
+        foreach ($this->schema as $column) {
+            $model_form_fields .= '<div><label>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</label><input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '" value="{{$' . str_singular($this->model) . '->' . $column->getName() . '}}"></div>';
+        }
+
+        $search_replace = [
+            '%model_singular%' => strtr(str_singular($this->model), ['_' => ' ']),
+            '%model_item%' => str_singular($this->model),
+            '%model_form_fields%' => $model_form_fields,
+            '%model_update_route%' => strtr($this->model, ['_' => '']) . '.update',
+        ];
+
+        return strtr($contents, $search_replace);
     }
 
     public function getIndexViewContents()
@@ -143,11 +168,16 @@ class MakeCrud extends Command
         $model_item = str_singular($this->model);
 
         foreach ($this->schema as $column) {
-            $model_table_head .= '<th>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</th>';
+            $column_heading = $column->getName();
+
+            if (substr($column->getName(), -3) == '_id') {
+                $column_heading = substr($column->getName(), 0, -3);
+            }
+            $model_table_head .= '<th>' . strtr(ucfirst($column_heading), ['_' => ' ']) . '</th>';
             $model_item_table_row .= '<td>{{$' . $model_item . '->' . $column->getName() . '}}</td>';
         }
 
-        $model_item_table_row .= '<td><a href="{{route(\'' . strtr($this->model, ['_' => '']) . '.show\',$' . $model_item . '->id)}}">View</a><a href="{{route(\'' . strtr($this->model, ['_' => '']) . '.edit\',$' . $model_item . '->id)}}">Edit</a><a href="{{route(\'' . strtr($this->model, ['_' => '']) . '.destroy\',$' . $model_item . '->id)}}">Delete</a></td>';
+        $model_item_table_row .= '<td><a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.show\',$' . $model_item . '->id)}}">View</a><a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.edit\',$' . $model_item . '->id)}}">Edit</a><form method="POST" action="{{route(\'' . strtr($this->model, ['_' => '']) . '.destroy\',$' . $model_item . ')}}">{{method_field(\'DELETE\')}}{{csrf_field()}}<button class="btn" type="submit">Delete</button></form></td>';
 
         $search_replace = [
             '%model_plural%' => $model_plural,

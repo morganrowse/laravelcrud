@@ -5,7 +5,8 @@
 <h1>Create new %model_singular%</h1>
 
 <form method="POST" action="{{route('%model_create_route%')}}">
-{{ csrf_field() }}
+
+{{csrf_field()}}
 
 %model_form_fields%
 
