@@ -37,7 +37,7 @@ app
 │   │   │   show.blade.php
 ```
 
-Now add the resource route
+Now add the resource route to your **web.php**
 
 ```
 Route::resource('posts','PostController')
