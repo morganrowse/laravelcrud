@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title') %model_plural% @endsection
+
 @section('content')
 
 <h1>%model_plural%</h1>

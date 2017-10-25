@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title') Edit %model_singular% @endsection
+
 @section('content')
 
 <h1>Edit %model_singular%</h1>

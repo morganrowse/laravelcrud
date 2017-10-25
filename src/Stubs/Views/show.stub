@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title') %model_item% @endsection
+
 @section('content')
 
 <h1>{{%model_item%->id}} </h1>

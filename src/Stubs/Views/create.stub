@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title') Create new %model_singular% @endsection
+
 @section('content')
 
 <h1>Create new %model_singular%</h1>
