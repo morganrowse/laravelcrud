@@ -21,4 +21,11 @@
             "MorganRowse\\LaravelCrud\\": "src/"
         }
     }
+    "extra": {
+    "laravel": {
+        "providers": [
+            "MorganRowse\\LaravelCrud\\"
+        ]
+    }
+},
 }
