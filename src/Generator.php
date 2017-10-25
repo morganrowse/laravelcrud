@@ -311,8 +311,15 @@ class Generator
     {
         $contents = file_get_contents($this->stub_path . "\\Views\\show.stub");
 
+        $model_fields = '';
+
+        foreach ($this->schema as $column) {
+            $model_fields .= '<dt>'.strtr(ucfirst($column->getName()), ['_' => ' ']).'</dt><dd>{{$'.str_singular($this->model).'->'.$column->getName().'}}</dd>';
+        }
+
         $search_replace = [
             '%model_item%' => '$' . str_singular($this->model),
+            '%model_fields%' => $model_fields
         ];
 
         return strtr($contents, $search_replace);

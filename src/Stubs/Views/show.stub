@@ -4,4 +4,8 @@
 
 <h1>{{%model_item%->id}} </h1>
 
+<dl>
+    %model_fields%
+</dl>
+
 @endsection
