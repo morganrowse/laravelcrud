@@ -1,10 +1,10 @@
 # Laravel CRUD
 
-This composer package adds artisan commands which create views, controllers and resource routing for crud operation based off a database  table schema.
+This composer package adds artisan commands which create models, views and controllers for crud operation based off a database table schema.
 
 ## Installation
 
-First add the package via composer
+Aadd the package via composer
 
 ```bash
 $ composer require morganrowse/laravelcrud
@@ -22,28 +22,23 @@ $ php artisan make:crud posts
 
 This will create 
 
-├── 
+```
+app
+│   Post.php
+└───Http
+│   └───Controllers
+│       │   PostController.php
+└───resources
+│   └───views
+│   │   └───posts
+│   │   │   create.blade.php
+│   │   │   edit.blade.php
+│   │   │   index.blade.php
+│   │   │   show.blade.php
+```
 
-├── app
+Now add the resource route
 
-|   ├── Http
-
-|       └── Controllers
-
-|           └── PhotoController.php
-
-├── resources
-
-|   ├── views
-
-|       └── posts
-
-|           └── create.blade.php
-
-|           └── edit.blade.php
-
-|           └── index.blade.php
-
-|           └── show.blade.php
-
-as well as adding the route resource to your routes file
+```
+Route::resource('posts','PostController')
+```
