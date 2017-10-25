@@ -30,16 +30,16 @@ app
 │   │   │   PostController.php
 │   └───Requests
 │   │   └───Post
-│   │   │   DestroyPostRequest.php
-│   │   │   StorePostRequest.php
-│   │   │   UpdatePostRequest.php
+│   │   │   │   DestroyPostRequest.php
+│   │   │   │   StorePostRequest.php
+│   │   │   │   UpdatePostRequest.php
 └───resources
 │   └───views
 │   │   └───posts
-│   │   │   create.blade.php
-│   │   │   edit.blade.php
-│   │   │   index.blade.php
-│   │   │   show.blade.php
+│   │   │   │   create.blade.php
+│   │   │   │   edit.blade.php
+│   │   │   │   index.blade.php
+│   │   │   │   show.blade.php
 ```
 
 Now add the resource route to your **web.php**
