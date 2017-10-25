@@ -1,10 +1,10 @@
 # Laravel CRUD
 
-This composer package adds artisan commands which create models, views and controllers for crud operation based off a database table schema.
+This composer package adds artisan commands which create Models, Views, Controllers and Request Validation for crud operation based off of a database table schema.
 
 ## Installation
 
-Aadd the package via composer
+First add the package via composer
 
 ```bash
 $ composer require morganrowse/laravelcrud
@@ -27,7 +27,12 @@ app
 │   Post.php
 └───Http
 │   └───Controllers
-│       │   PostController.php
+│   │   │   PostController.php
+│   └───Requests
+│   │   └───Post
+│   │   │   DestroyPostRequest.php
+│   │   │   StorePostRequest.php
+│   │   │   UpdatePostRequest.php
 └───resources
 │   └───views
 │   │   └───posts

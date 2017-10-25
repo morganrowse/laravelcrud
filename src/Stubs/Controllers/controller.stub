@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\%model_class%;
-use Illuminate\Http\Request;
+use App\Http\Requests\%model_class%\Store%model_class%Request;
+use App\Http\Requests\%model_class%\Update%model_class%Request;
+use App\Http\Requests\%model_class%\Destroy%model_class%Request;
 
 class %model_class%Controller extends Controller
 {
@@ -19,7 +21,7 @@ class %model_class%Controller extends Controller
         return view('%model_view_path%.create');
     }
 
-    public function store(Request $request)
+    public function store(Store%model_class%Request $request)
     {
         $%model_item% = new %model_class%;
 
@@ -38,14 +40,14 @@ class %model_class%Controller extends Controller
             return view('%model_view_path%.edit')->with(['%model_item%'=>$%model_item%]);
         }
 
-    public function update(Request $request, %model_class% $%model_item%)
+    public function update(Update%model_class%Request $request, %model_class% $%model_item%)
     {
         %model_fill_fields%
 
         return redirect()->route('%model_view_path%.index');
     }
 
-    public function destroy(%model_class% $%model_item%)
+    public function destroy(Destroy%model_class%Request $request, %model_class% $%model_item%)
     {
         %model_destroy%
 
