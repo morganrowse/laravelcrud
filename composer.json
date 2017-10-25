@@ -20,7 +20,7 @@
         "psr-4": {
             "MorganRowse\\LaravelCrud\\": "src/"
         }
-    }
+    },
     "extra": {
     "laravel": {
         "providers": [
