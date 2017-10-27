@@ -51,3 +51,5 @@ Now add the resource route to your **web.php**
 ```
 Route::resource('posts','PostController')
 ```
+
+![Subheader Image](https://user-images.githubusercontent.com/17880010/32118361-aab588f8-bb51-11e7-95ef-6462dd720179.png)
