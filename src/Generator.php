@@ -3,9 +3,12 @@
 namespace MorganRowse\LaravelCrud;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Console\DetectsApplicationNamespace;
 
 class Generator
 {
+    use DetectsApplicationNamespace;
+
     public $model;
 
     protected $stub_path, $view_path, $model_view_path, $model_path, $controller_path, $request_path, $schema, $ignored_fields;
@@ -124,6 +127,7 @@ class Generator
         }
 
         $search_replace = [
+            '%namespace%' => $this->getAppNamespace(),
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
             '%model_relationship_functions%' => $model_relationship_functions,
         ];
@@ -143,6 +147,7 @@ class Generator
         $request_rules = '';
 
         $search_replace = [
+            '%namespace%' => $this->getAppNamespace(),
             '%model_class%' => $this->getClassName(),
             '%request_rules%' => $request_rules
         ];
@@ -163,6 +168,7 @@ class Generator
         }
 
         $search_replace = [
+            '%namespace%' => $this->getAppNamespace(),
             '%model_class%' => $this->getClassName(),
             '%request_rules%' => $request_rules
         ];
@@ -183,6 +189,7 @@ class Generator
         }
 
         $search_replace = [
+            '%namespace%' => $this->getAppNamespace(),
             '%model_class%' => $this->getClassName(),
             '%request_rules%' => $request_rules
         ];
@@ -212,6 +219,7 @@ class Generator
         $model_fill_fields .= '$' . str_singular($this->model) . '->save();';
 
         $search_replace = [
+            '%namespace%' => $this->getAppNamespace(),
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
             '%model%' => $this->model,
             '%model_view_path%' => strtr($this->model, ['_' => '']),

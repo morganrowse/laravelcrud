@@ -5,6 +5,7 @@ use MorganRowse\LaravelCrud\Generator;
 
 class MakeCrud extends Command
 {
+
     protected $signature = 'make:crud {model}';
     protected $description = 'Generate CRUD views and controllers from a model';
 

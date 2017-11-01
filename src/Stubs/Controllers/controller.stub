@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace %namespace%Http\Controllers;
 
-use App\%model_class%;
-use App\Http\Requests\%model_class%\Store%model_class%Request;
-use App\Http\Requests\%model_class%\Update%model_class%Request;
-use App\Http\Requests\%model_class%\Destroy%model_class%Request;
+use %namespace%%model_class%;
+use %namespace%Http\Requests\%model_class%\Store%model_class%Request;
+use %namespace%Http\Requests\%model_class%\Update%model_class%Request;
+use %namespace%Http\Requests\%model_class%\Destroy%model_class%Request;
 
 class %model_class%Controller extends Controller
 {
