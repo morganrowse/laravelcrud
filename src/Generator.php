@@ -127,7 +127,7 @@ class Generator
         }
 
         $search_replace = [
-            '%namespace%' => $this->getAppNamespace(),
+            '%namespace%' => rtrim($this->getAppNamespace(), '/'),
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
             '%model_relationship_functions%' => $model_relationship_functions,
         ];
