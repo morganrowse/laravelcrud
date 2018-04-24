@@ -9,14 +9,16 @@ This composer package adds artisan commands which create Models, Views, Controll
 First add the package via composer
 
 ```bash
-$ composer require morganrowse/laravelcrud
+$ composer require morganrowse/laravelcrud dev-master
 ```
+
+_Use dev-master as I currently don't push tags_
 
 ## Usage
 
 ![Subheader Image](https://user-images.githubusercontent.com/17880010/32118361-aab588f8-bb51-11e7-95ef-6462dd720179.png)
 
-First have your database setup as desired following laravel naming convention.
+First have your database setup as desired following laravel naming convention (such as a table called posts).
 
 Next run the command via artisan
 
@@ -24,7 +26,7 @@ Next run the command via artisan
 $ php artisan make:crud posts
 ```
 
-This will create 
+This will create:
 
 ```
 app
@@ -49,7 +51,9 @@ app
 Now add the resource route to your **web.php**
 
 ```
-Route::resource('posts','PostController')
+...
+Route::resource('posts','PostController');
+...
 ```
 
 ![Subheader Image](https://user-images.githubusercontent.com/17880010/32118361-aab588f8-bb51-11e7-95ef-6462dd720179.png)
