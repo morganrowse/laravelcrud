@@ -6,7 +6,7 @@ use MorganRowse\LaravelCrud\Generator;
 class MakeCrud extends Command
 {
 
-    protected $signature = 'make:crud {model}';
+    protected $signature = 'make:crud {model} {--force}';
     protected $description = 'Generate CRUD views and controllers from a model';
 
     protected $stub_path, $view_path, $model_view_path, $model_path, $controller_path, $schema, $model;
@@ -20,6 +20,12 @@ class MakeCrud extends Command
     public function handle()
     {
         $this->generator = new Generator($this->argument('model'));
+
+        if($this->option('force')){
+            $this->line('Removing previous CRUD...');
+            $this->generator->removeExistingCrud();
+            $this->line('Previous CRUD removed!');
+        }
 
         if($this->generator->hasExistingCrud()){
             $this->error('CRUD already exists!');

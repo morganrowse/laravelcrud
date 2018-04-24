@@ -21,7 +21,7 @@
         </tr>
     @empty
         <tr>
-            <td colspan="100%">No data ex</td>
+            <td colspan="100%">No data exists</td>
         </tr>
     @endforelse
 </table>

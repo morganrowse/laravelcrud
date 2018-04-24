@@ -23,9 +23,7 @@ class %model_class%Controller extends Controller
 
     public function store(Store%model_class%Request $request)
     {
-        $%model_item% = new %model_class%;
-
-        %model_fill_fields%
+        %model_class%::create($request->all());
 
         return redirect()->route('%model_view_path%.index');
     }
@@ -42,7 +40,8 @@ class %model_class%Controller extends Controller
 
     public function update(Update%model_class%Request $request, %model_class% $%model_item%)
     {
-        %model_fill_fields%
+        $%model_item%->fill($request->all());
+        $%model_item%->save();
 
         return redirect()->route('%model_view_path%.index');
     }

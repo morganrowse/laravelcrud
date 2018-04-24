@@ -18,9 +18,9 @@ class Generator
         $this->model = $model;
         $this->stub_path = base_path("vendor\\morganrowse\\laravelcrud\\src\\Stubs");
         $this->view_path = "resources\\views\\";
-        $this->model_path = base_path("app\\");
-        $this->controller_path = base_path("app\\Http\\Controllers\\");
-        $this->request_path = base_path("app\\Http\\Requests\\");
+        $this->model_path = base_path($this->getAppNamespace());
+        $this->controller_path = base_path($this->getAppNamespace()."Http\\Controllers\\");
+        $this->request_path = base_path($this->getAppNamespace()."Http\\Requests\\");
         $this->model_view_path = "resources\\views\\" . strtr($this->model, ['_' => '']);
         $this->ignored_fields = [
             'id',
@@ -28,6 +28,19 @@ class Generator
             'updated_at',
             'deleted_at'
         ];
+        $this->files = [
+            $this->model_view_path . '\\create.blade.php',
+            $this->model_view_path . '\\edit.blade.php',
+            $this->model_view_path . '\\index.blade.php',
+            $this->model_view_path . '\\show.blade.php',
+            $this->model_view_path . '\\show.blade.php',
+            $this->controller_path . $this->getClassName() . 'Controller.php',
+            $this->model_path . $this->getClassName() . '.php',
+            $this->request_path . $this->getClassName() . '\\Destroy' . $this->getClassName() . 'Request.php',
+            $this->request_path . $this->getClassName() . '\\Store' . $this->getClassName() . 'Request.php',
+            $this->request_path . $this->getClassName() . '\\Update' . $this->getClassName() . 'Request.php'
+        ];
+        $this->indent_count = 4;
     }
 
     public function generate()
@@ -50,23 +63,24 @@ class Generator
         $this->makeView('show', $this->getShowViewContents());
     }
 
+
+    public function insertTab($count = 1)
+    {
+        return str_repeat(str_repeat(' ', $this->indent_count), $count);
+    }
+
+    public function removeExistingCrud()
+    {
+        foreach ($this->files as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
+
     public function hasExistingCrud()
     {
-        $files = [
-            $this->model_view_path . '\\create.blade.php',
-            $this->model_view_path . '\\edit.blade.php',
-            $this->model_view_path . '\\index.blade.php',
-            $this->model_view_path . '\\show.blade.php',
-            $this->model_view_path . '\\show.blade.php',
-            $this->controller_path . $this->getClassName() . 'Controller.php',
-            $this->model_path . $this->getClassName() . '.php',
-            $this->request_path . $this->getClassName() . '\\Destroy' . $this->getClassName() . 'Request.php',
-            $this->request_path . $this->getClassName() . '\\Store' . $this->getClassName() . 'Request.php',
-            $this->request_path . $this->getClassName() . '\\Update' . $this->getClassName() . 'Request.php'
-
-        ];
-
-        foreach ($files as $file) {
+        foreach ($this->files as $file) {
             if (file_exists($file)) {
                 return true;
             }
@@ -118,18 +132,27 @@ class Generator
     {
         $contents = file_get_contents($this->stub_path . "\\Models\\model.stub");
 
+        $model_fillable_fields = '';
         $model_relationship_functions = '';
 
         foreach ($this->schema as $column) {
+            if(!$this->isIgnoredField($column->getName())){
+                if($model_fillable_fields!=''){
+                    $model_fillable_fields .= ','.PHP_EOL.$this->insertTab(2);
+                }
+                $model_fillable_fields .= '\''.$column->getName().'\'';
+            }
+
             if ($this->isRelationField($column->getName())) {
-                $model_relationship_functions .= 'public function ' . lcfirst(strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => ''])) . '() { return $this->belongsTo(\'App\\' . strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => '']) . '\'); } ';
+                $model_relationship_functions .= 'public function ' . lcfirst(strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => ''])) . '()' . PHP_EOL . $this->insertTab() . '{' . PHP_EOL . $this->insertTab(2) . 'return $this->belongsTo(\''.$this->getAppNamespace().'\\' . strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => '']) . '\');' . PHP_EOL . $this->insertTab().'} ';
             }
         }
 
         $search_replace = [
-            '%namespace%' => rtrim($this->getAppNamespace(), '/'),
+            '%namespace%' => rtrim($this->getAppNamespace(), '\\'),
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
-            '%model_relationship_functions%' => $model_relationship_functions,
+            '%model_fillable_fields%' => $model_fillable_fields,
+            '%model_relationship_functions%' => $model_relationship_functions
         ];
 
         return strtr($contents, $search_replace);
@@ -163,7 +186,10 @@ class Generator
 
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
-                $request_rules .= '\'' . $column->getName() . '\' => \'' . (($column->getNotNull()) ? 'required|' : '') . (($this->isRelationField($column->getName()) ? 'exists:' . str_plural(substr($column->getName(), 0, -3)) . ',id' : '')) . '\',';
+                if($request_rules!=''){
+                    $request_rules .= ','.PHP_EOL.$this->insertTab(3);
+                }
+                $request_rules .= '\'' . $column->getName() . '\' => \'' . (($column->getNotNull()) ? 'required' : '') . (($this->isRelationField($column->getName()) ? '|exists:' . str_plural(substr($column->getName(), 0, -3)) . ',id' : '')) . '\'';
             }
         }
 
@@ -184,7 +210,10 @@ class Generator
 
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
-                $request_rules .= '\'' . $column->getName() . '\' => \'' . (($column->getNotNull()) ? 'required|' : '') . (($this->isRelationField($column->getName()) ? 'exists:' . str_plural(substr($column->getName(), 0, -3)) . ',id' : '')) . '\',';
+                if($request_rules!=''){
+                    $request_rules .= ','.PHP_EOL.$this->insertTab(3);
+                }
+                $request_rules .= '\'' . $column->getName() . '\' => \'' . (($column->getNotNull()) ? 'required' : '') . (($this->isRelationField($column->getName()) ? '|exists:' . str_plural(substr($column->getName(), 0, -3)) . ',id' : '')) . '\'';
             }
         }
 
@@ -208,16 +237,6 @@ class Generator
     {
         $contents = file_get_contents($this->stub_path . "\\Controllers\\controller.stub");
 
-        $model_fill_fields = '';
-
-        foreach ($this->schema as $column) {
-            if (!$this->isIgnoredField($column->getName())) {
-                $model_fill_fields .= '$' . str_singular($this->model) . '->' . $column->getName() . ' = $request->input("' . $column->getName() . '");';
-            }
-        }
-
-        $model_fill_fields .= '$' . str_singular($this->model) . '->save();';
-
         $search_replace = [
             '%namespace%' => $this->getAppNamespace(),
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
@@ -225,7 +244,6 @@ class Generator
             '%model_view_path%' => strtr($this->model, ['_' => '']),
             '%model_items%' => $this->model,
             '%model_item%' => str_singular($this->model),
-            '%model_fill_fields%' => $model_fill_fields,
             '%model_destroy%' => '$' . str_singular($this->model) . '->delete();'
         ];
 
@@ -322,7 +340,7 @@ class Generator
         $model_fields = '';
 
         foreach ($this->schema as $column) {
-            $model_fields .= '<dt>'.strtr(ucfirst($column->getName()), ['_' => ' ']).'</dt><dd>{{$'.str_singular($this->model).'->'.$column->getName().'}}</dd>';
+            $model_fields .= '<dt>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</dt><dd>{{$' . str_singular($this->model) . '->' . $column->getName() . '}}</dd>';
         }
 
         $search_replace = [
