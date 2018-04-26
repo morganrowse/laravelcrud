@@ -39,13 +39,13 @@ app
 │   │   │   │   DestroyPostRequest.php
 │   │   │   │   StorePostRequest.php
 │   │   │   │   UpdatePostRequest.php
-└───resources
-│   └───views
-│   │   └───posts
-│   │   │   │   create.blade.php
-│   │   │   │   edit.blade.php
-│   │   │   │   index.blade.php
-│   │   │   │   show.blade.php
+resources
+└───views
+│   └───posts
+│   │   │   create.blade.php
+│   │   │   edit.blade.php
+│   │   │   index.blade.php
+│   │   │   show.blade.php
 ```
 
 Now add the resource route to your **web.php**
