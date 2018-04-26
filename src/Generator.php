@@ -9,18 +9,17 @@ class Generator
 {
     use DetectsApplicationNamespace;
 
-    public $model;
-
-    protected $stub_path, $view_path, $model_view_path, $model_path, $controller_path, $request_path, $schema, $ignored_fields;
+    protected $stub_path, $view_stub_path, $view_path, $model_view_path, $model_path, $controller_path, $request_path, $schema, $ignored_fields;
 
     public function __construct($model)
     {
         $this->model = $model;
         $this->stub_path = base_path("vendor\\morganrowse\\laravelcrud\\src\\Stubs");
+        $this->view_stub_path = base_path("vendor\\morganrowse\\laravelcrud\\src\\Stubs\\Views");
         $this->view_path = "resources\\views\\";
         $this->model_path = base_path($this->getAppNamespace());
-        $this->controller_path = base_path($this->getAppNamespace()."Http\\Controllers\\");
-        $this->request_path = base_path($this->getAppNamespace()."Http\\Requests\\");
+        $this->controller_path = base_path($this->getAppNamespace() . "Http\\Controllers\\");
+        $this->request_path = base_path($this->getAppNamespace() . "Http\\Requests\\");
         $this->model_view_path = "resources\\views\\" . strtr($this->model, ['_' => '']);
         $this->ignored_fields = [
             'id',
@@ -62,7 +61,6 @@ class Generator
         $this->makeView('index', $this->getIndexViewContents());
         $this->makeView('show', $this->getShowViewContents());
     }
-
 
     public function insertTab($count = 1)
     {
@@ -107,6 +105,15 @@ class Generator
         }
     }
 
+    public function getRelationFieldName($field)
+    {
+        if (substr($field, -3) == '_id') {
+            return substr($field, 0, -3);
+        } else {
+            return $field;
+        }
+    }
+
     public function getClassName()
     {
         return strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']);
@@ -136,15 +143,15 @@ class Generator
         $model_relationship_functions = '';
 
         foreach ($this->schema as $column) {
-            if(!$this->isIgnoredField($column->getName())){
-                if($model_fillable_fields!=''){
-                    $model_fillable_fields .= ','.PHP_EOL.$this->insertTab(2);
+            if (!$this->isIgnoredField($column->getName())) {
+                if ($model_fillable_fields != '') {
+                    $model_fillable_fields .= ',' . PHP_EOL . $this->insertTab(2);
                 }
-                $model_fillable_fields .= '\''.$column->getName().'\'';
+                $model_fillable_fields .= '\'' . $column->getName() . '\'';
             }
 
             if ($this->isRelationField($column->getName())) {
-                $model_relationship_functions .= 'public function ' . lcfirst(strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => ''])) . '()' . PHP_EOL . $this->insertTab() . '{' . PHP_EOL . $this->insertTab(2) . 'return $this->belongsTo(\''.$this->getAppNamespace().'\\' . strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => '']) . '\');' . PHP_EOL . $this->insertTab().'} ';
+                $model_relationship_functions .= 'public function ' . lcfirst(strtr(ucwords(strtr($this->getRelationFieldName($column->getName()), ['_' => ' '])), [' ' => ''])) . '()' . PHP_EOL . $this->insertTab() . '{' . PHP_EOL . $this->insertTab(2) . 'return $this->belongsTo(\'' . $this->getAppNamespace() . '\\' . strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => '']) . '\');' . PHP_EOL . $this->insertTab() . '} ';
             }
         }
 
@@ -186,8 +193,8 @@ class Generator
 
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
-                if($request_rules!=''){
-                    $request_rules .= ','.PHP_EOL.$this->insertTab(3);
+                if ($request_rules != '') {
+                    $request_rules .= ',' . PHP_EOL . $this->insertTab(3);
                 }
                 $request_rules .= '\'' . $column->getName() . '\' => \'' . (($column->getNotNull()) ? 'required' : '') . (($this->isRelationField($column->getName()) ? '|exists:' . str_plural(substr($column->getName(), 0, -3)) . ',id' : '')) . '\'';
             }
@@ -210,8 +217,8 @@ class Generator
 
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
-                if($request_rules!=''){
-                    $request_rules .= ','.PHP_EOL.$this->insertTab(3);
+                if ($request_rules != '') {
+                    $request_rules .= ',' . PHP_EOL . $this->insertTab(3);
                 }
                 $request_rules .= '\'' . $column->getName() . '\' => \'' . (($column->getNotNull()) ? 'required' : '') . (($this->isRelationField($column->getName()) ? '|exists:' . str_plural(substr($column->getName(), 0, -3)) . ',id' : '')) . '\'';
             }
@@ -257,13 +264,16 @@ class Generator
 
     public function getCreateViewContents()
     {
-        $contents = file_get_contents($this->stub_path . "\\Views\\create.stub");
+        $contents = file_get_contents($this->view_stub_path . "\\create.stub");
 
         $model_form_fields = '';
 
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
-                $model_form_fields .= '<div><label>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</label><input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '"></div>';
+                if ($model_form_fields != '') {
+                    $model_form_fields .= PHP_EOL . $this->insertTab(2);
+                }
+                $model_form_fields .= $this->getFormElement($column);
             }
         }
 
@@ -276,9 +286,14 @@ class Generator
         return strtr($contents, $search_replace);
     }
 
+    public function getFormElement($column, $hasOld = false)
+    {
+        return '<div>' . PHP_EOL . $this->insertTab(3) . '<label>' . strtr(ucfirst($this->getRelationFieldName($column->getName()), ['_' => ' '])) . '</label>' . PHP_EOL . $this->insertTab(3) . '<input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '">' . PHP_EOL . $this->insertTab(2) . '</div>';
+    }
+
     public function getEditViewContents()
     {
-        $contents = file_get_contents($this->stub_path . "\\Views\\edit.stub");
+        $contents = file_get_contents($this->view_stub_path . "\\edit.stub");
 
         $model_form_fields = '';
 
@@ -300,7 +315,7 @@ class Generator
 
     public function getIndexViewContents()
     {
-        $contents = file_get_contents($this->stub_path . "\\Views\\index.stub");
+        $contents = file_get_contents($this->view_stub_path . "\\index.stub");
 
         $model_table_head = '';
         $model_item_table_row = '';
@@ -312,11 +327,19 @@ class Generator
         foreach ($this->schema as $column) {
             $column_heading = $column->getName();
 
-            if (substr($column->getName(), -3) == '_id') {
+            if (in_array($column->getName(), ['created_at', 'updated_at', 'deleted_at'])) {
+                $model_item_table_row .= '<td>{{$' . $model_item . '->' . $column->getName() . '->diffForHumans()}}</td>';
+
                 $column_heading = substr($column->getName(), 0, -3);
+            } else {
+                $model_item_table_row .= '<td>{{$' . $model_item . '->' . $column->getName() . '}}</td>';
+
+                if (substr($column->getName(), -3) == '_id') {
+                    $column_heading = substr($column->getName(), 0, -3);
+                }
             }
+
             $model_table_head .= '<th>' . strtr(ucfirst($column_heading), ['_' => ' ']) . '</th>';
-            $model_item_table_row .= '<td>{{$' . $model_item . '->' . $column->getName() . '}}</td>';
         }
 
         $model_item_table_row .= '<td><a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.show\',$' . $model_item . '->id)}}">View</a><a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.edit\',$' . $model_item . '->id)}}">Edit</a><form method="POST" action="{{route(\'' . strtr($this->model, ['_' => '']) . '.destroy\',$' . $model_item . ')}}">{{method_field(\'DELETE\')}}{{csrf_field()}}<button class="btn" type="submit">Delete</button></form></td>';
@@ -335,7 +358,7 @@ class Generator
 
     public function getShowViewContents()
     {
-        $contents = file_get_contents($this->stub_path . "\\Views\\show.stub");
+        $contents = file_get_contents($this->view_stub_path . "\\show.stub");
 
         $model_fields = '';
 
@@ -367,5 +390,10 @@ class Generator
                 return $doctrine_type;
                 break;
         }
+    }
+
+    public function setViewStubPath($view_stub_path)
+    {
+        $this->view_stub_path = $view_stub_path;
     }
 }

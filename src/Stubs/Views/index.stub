@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title') %model_plural% @endsection
+@section('title', '%model_plural%')
 
 @section('content')
 
