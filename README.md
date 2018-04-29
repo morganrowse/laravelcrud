@@ -2,7 +2,7 @@
 
 
 [![Packagist](https://img.shields.io/packagist/dt/morganrowse/laravelcrud.svg?style=for-the-badge)](https://packagist.org/packages/morganrowse/laravelcrud)
-
+![Packagist](https://img.shields.io/packagist/v/morganrowse/laravelcrud.svg?style=for-the-badge)
 
 This composer package adds artisan commands which create Models, Views, Controllers and Request Validation for crud operation based off of a database table schema.
 
