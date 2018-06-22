@@ -9,18 +9,18 @@ class Generator
 {
     use DetectsApplicationNamespace;
 
-    protected $stub_path, $view_stub_path, $view_path, $model_view_path, $model_path, $controller_path, $request_path, $schema, $ignored_fields;
+    protected $stub_path, $view_stub_path, $view_path, $model_path, $controller_path, $resource_path, $request_path, $schema, $ignored_fields;
 
     public function __construct($model)
     {
         $this->model = $model;
-        $this->stub_path = base_path("vendor\\morganrowse\\laravelcrud\\src\\Stubs");
-        $this->view_stub_path = base_path("vendor\\morganrowse\\laravelcrud\\src\\Stubs\\Views");
-        $this->view_path = "resources\\views\\";
-        $this->model_path = base_path($this->getAppNamespace());
-        $this->controller_path = base_path($this->getAppNamespace() . "Http\\Controllers\\");
-        $this->request_path = base_path($this->getAppNamespace() . "Http\\Requests\\");
-        $this->model_view_path = "resources\\views\\" . strtr($this->model, ['_' => '']);
+        $this->stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/');
+        $this->view_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Views/');
+        $this->model_path = app_path() . '/';
+        $this->controller_path = app_path('Http/Controllers/');
+        $this->resource_path = app_path('Http/Resources/');
+        $this->request_path = app_path('Http/Requests/');
+        $this->view_path = base_path('resources/views/' . strtr($this->model, ['_' => '']) . '/');
         $this->ignored_fields = [
             'id',
             'created_at',
@@ -28,28 +28,31 @@ class Generator
             'deleted_at'
         ];
         $this->files = [
-            $this->model_view_path . '\\create.blade.php',
-            $this->model_view_path . '\\edit.blade.php',
-            $this->model_view_path . '\\index.blade.php',
-            $this->model_view_path . '\\show.blade.php',
-            $this->model_view_path . '\\show.blade.php',
+            $this->view_path . 'create.blade.php',
+            $this->view_path . 'edit.blade.php',
+            $this->view_path . 'index.blade.php',
+            $this->view_path . 'show.blade.php',
             $this->controller_path . $this->getClassName() . 'Controller.php',
             $this->model_path . $this->getClassName() . '.php',
-            $this->request_path . $this->getClassName() . '\\Destroy' . $this->getClassName() . 'Request.php',
-            $this->request_path . $this->getClassName() . '\\Store' . $this->getClassName() . 'Request.php',
-            $this->request_path . $this->getClassName() . '\\Update' . $this->getClassName() . 'Request.php'
+            $this->resource_path . $this->getClassName() . 'Resource.php',
+            $this->request_path . 'Destroy' . $this->getClassName() . '.php',
+            $this->request_path . 'Store' . $this->getClassName() . '.php',
+            $this->request_path . 'Update' . $this->getClassName() . '.php'
         ];
         $this->indent_count = 4;
     }
 
     public function generate()
     {
-        $this->makeDirectory($this->model_view_path);
+        $this->makeDirectory($this->view_path);
         $this->schema = DB::connection()->getDoctrineSchemaManager()->listTableColumns($this->model);
 
         $this->makeModel($this->getModelContents());
 
-        $this->makeDirectory($this->request_path . '\\' . $this->getClassName());
+        $this->makeDirectory($this->resource_path);
+        $this->makeResource($this->getResourceContents());
+
+        $this->makeDirectory($this->request_path);
         $this->makeRequest('Destroy', $this->getDestroyRequestContents());
         $this->makeRequest('Store', $this->getStoreRequestContents());
         $this->makeRequest('Update', $this->getUpdateRequestContents());
@@ -137,7 +140,7 @@ class Generator
 
     public function getModelContents()
     {
-        $contents = file_get_contents($this->stub_path . "\\Models\\model.stub");
+        $contents = file_get_contents($this->stub_path . 'Models/model.stub');
 
         $model_fillable_fields = '';
         $model_relationship_functions = '';
@@ -165,14 +168,33 @@ class Generator
         return strtr($contents, $search_replace);
     }
 
+    public function makeResource($contents)
+    {
+        file_put_contents($this->resource_path . $this->getClassName() . 'Resource.php', $contents);
+
+        return null;
+    }
+
+    public function getResourceContents()
+    {
+        $contents = file_get_contents($this->stub_path . 'Resources/resource.stub');
+
+        $search_replace = [
+            '%namespace%' => rtrim($this->getAppNamespace(), '\\'),
+            '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => ''])
+        ];
+
+        return strtr($contents, $search_replace);
+    }
+
     public function makeRequest($request_type, $contents)
     {
-        file_put_contents($this->request_path . $this->getClassName() . '\\' . $request_type . $this->getClassName() . 'Request.php', $contents);
+        file_put_contents($this->request_path . '/' . $request_type . $this->getClassName() . '.php', $contents);
     }
 
     public function getDestroyRequestContents()
     {
-        $contents = file_get_contents($this->stub_path . "\\Requests\\destroy_request.stub");
+        $contents = file_get_contents($this->stub_path . 'Requests/destroy_request.stub');
 
         $request_rules = '';
 
@@ -187,7 +209,7 @@ class Generator
 
     public function getStoreRequestContents()
     {
-        $contents = file_get_contents($this->stub_path . "\\Requests\\store_request.stub");
+        $contents = file_get_contents($this->stub_path . 'Requests/store_request.stub');
 
         $request_rules = '';
 
@@ -211,7 +233,7 @@ class Generator
 
     public function getUpdateRequestContents()
     {
-        $contents = file_get_contents($this->stub_path . "\\Requests\\update_request.stub");
+        $contents = file_get_contents($this->stub_path . 'Requests/update_request.stub');
 
         $request_rules = '';
 
@@ -235,6 +257,7 @@ class Generator
 
     public function makeController($contents)
     {
+
         file_put_contents($this->controller_path . $this->getClassName() . 'Controller.php', $contents);
 
         return null;
@@ -242,13 +265,13 @@ class Generator
 
     public function getControllerContents()
     {
-        $contents = file_get_contents($this->stub_path . "\\Controllers\\controller.stub");
+        $contents = file_get_contents($this->stub_path . 'Controllers/controller.stub');
 
         $search_replace = [
             '%namespace%' => $this->getAppNamespace(),
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
             '%model%' => $this->model,
-            '%model_view_path%' => strtr($this->model, ['_' => '']),
+            '%view_path%' => strtr($this->model, ['_' => '']),
             '%model_items%' => $this->model,
             '%model_item%' => str_singular($this->model),
             '%model_destroy%' => '$' . str_singular($this->model) . '->delete();'
@@ -259,12 +282,12 @@ class Generator
 
     public function makeView($view_type, $contents)
     {
-        file_put_contents($this->model_view_path . "\\" . $view_type . '.blade.php', $contents);
+        file_put_contents($this->view_path . '/' . $view_type . '.blade.php', $contents);
     }
 
     public function getCreateViewContents()
     {
-        $contents = file_get_contents($this->view_stub_path . "\\create.stub");
+        $contents = file_get_contents($this->view_stub_path . 'create.stub');
 
         $model_form_fields = '';
 
@@ -288,12 +311,12 @@ class Generator
 
     public function getFormElement($column, $hasOld = false)
     {
-        return '<div>' . PHP_EOL . $this->insertTab(3) . '<label>' . strtr(ucfirst($this->getRelationFieldName($column->getName()), ['_' => ' '])) . '</label>' . PHP_EOL . $this->insertTab(3) . '<input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '">' . PHP_EOL . $this->insertTab(2) . '</div>';
+        return '<div>' . PHP_EOL . $this->insertTab(3) . '<label>' . strtr(ucfirst($this->getRelationFieldName($column->getName())), ['_' => ' ']) . '</label>' . PHP_EOL . $this->insertTab(3) . '<input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '">' . PHP_EOL . $this->insertTab(2) . '</div>';
     }
 
     public function getEditViewContents()
     {
-        $contents = file_get_contents($this->view_stub_path . "\\edit.stub");
+        $contents = file_get_contents($this->view_stub_path . 'edit.stub');
 
         $model_form_fields = '';
 
@@ -315,7 +338,7 @@ class Generator
 
     public function getIndexViewContents()
     {
-        $contents = file_get_contents($this->view_stub_path . "\\index.stub");
+        $contents = file_get_contents($this->view_stub_path . 'index.stub');
 
         $model_table_head = '';
         $model_item_table_row = '';
@@ -358,7 +381,7 @@ class Generator
 
     public function getShowViewContents()
     {
-        $contents = file_get_contents($this->view_stub_path . "\\show.stub");
+        $contents = file_get_contents($this->view_stub_path . 'show.stub');
 
         $model_fields = '';
 

@@ -3,9 +3,9 @@
 namespace %namespace%Http\Controllers;
 
 use %namespace%%model_class%;
-use %namespace%Http\Requests\%model_class%\Store%model_class%Request;
-use %namespace%Http\Requests\%model_class%\Update%model_class%Request;
-use %namespace%Http\Requests\%model_class%\Destroy%model_class%Request;
+use %namespace%Http\Requests\%model_class%\Store%model_class%;
+use %namespace%Http\Requests\%model_class%\Update%model_class%;
+use %namespace%Http\Requests\%model_class%\Destroy%model_class%;
 
 class %model_class%Controller extends Controller
 {
@@ -19,7 +19,7 @@ class %model_class%Controller extends Controller
         return view('%model_view_path%.create');
     }
 
-    public function store(Store%model_class%Request $request)
+    public function store(Store%model_class% $request)
     {
         retunr = %model_class%::create($request->all());
     }
@@ -29,7 +29,7 @@ class %model_class%Controller extends Controller
         return $%model_item%;
     }
 
-    public function update(Update%model_class%Request $request, %model_class% $%model_item%)
+    public function update(Update%model_class% $request, %model_class% $%model_item%)
     {
         $%model_item%->fill($request->all());
         $%model_item%->save();
@@ -37,7 +37,7 @@ class %model_class%Controller extends Controller
         return $%model_item%;
     }
 
-    public function destroy(Destroy%model_class%Request $request, %model_class% $%model_item%)
+    public function destroy(Destroy%model_class% $request, %model_class% $%model_item%)
     {
         %model_destroy%
 

@@ -3,9 +3,9 @@
 namespace %namespace%Http\Controllers;
 
 use %namespace%%model_class%;
-use %namespace%Http\Requests\%model_class%\Store%model_class%Request;
-use %namespace%Http\Requests\%model_class%\Update%model_class%Request;
-use %namespace%Http\Requests\%model_class%\Destroy%model_class%Request;
+use %namespace%Http\Requests\%model_class%\Store%model_class%;
+use %namespace%Http\Requests\%model_class%\Update%model_class%;
+use %namespace%Http\Requests\%model_class%\Destroy%model_class%;
 
 class %model_class%Controller extends Controller
 {
@@ -13,43 +13,43 @@ class %model_class%Controller extends Controller
     {
         $%model_items% = %model_class%::get();
 
-        return view('%model_view_path%.index')->with(['%model_items%'=>$%model_items%]);
+        return view('%view_path%.index')->with(['%model_items%'=>$%model_items%]);
     }
 
     public function create()
     {
-        return view('%model_view_path%.create');
+        return view('%view_path%.create');
     }
 
-    public function store(Store%model_class%Request $request)
+    public function store(Store%model_class% $request)
     {
         %model_class%::create($request->all());
 
-        return redirect()->route('%model_view_path%.index');
+        return redirect()->route('%view_path%.index');
     }
 
     public function show(%model_class% $%model_item%)
     {
-        return view('%model_view_path%.show')->with(['%model_item%'=>$%model_item%]);
+        return view('%view_path%.show')->with(['%model_item%'=>$%model_item%]);
     }
 
     public function edit(%model_class% $%model_item%)
         {
-            return view('%model_view_path%.edit')->with(['%model_item%'=>$%model_item%]);
+            return view('%view_path%.edit')->with(['%model_item%'=>$%model_item%]);
         }
 
-    public function update(Update%model_class%Request $request, %model_class% $%model_item%)
+    public function update(Update%model_class% $request, %model_class% $%model_item%)
     {
         $%model_item%->fill($request->all());
         $%model_item%->save();
 
-        return redirect()->route('%model_view_path%.index');
+        return redirect()->route('%view_path%.index');
     }
 
-    public function destroy(Destroy%model_class%Request $request, %model_class% $%model_item%)
+    public function destroy(Destroy%model_class% $request, %model_class% $%model_item%)
     {
         %model_destroy%
 
-        return redirect()->route('%model_view_path%.index');
+        return redirect()->route('%view_path%.index');
     }
 }

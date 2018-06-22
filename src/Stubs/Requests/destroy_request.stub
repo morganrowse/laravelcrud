@@ -4,7 +4,7 @@ namespace %namespace%Http\Requests\%model_class%;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class Destroy%model_class%Request extends FormRequest
+class Destroy%model_class% extends FormRequest
 {
     public function authorize()
     {
