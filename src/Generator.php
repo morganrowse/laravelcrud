@@ -9,7 +9,7 @@ class Generator
 {
     use DetectsApplicationNamespace;
 
-    protected $model, $controller_stub_path, $view_controller_stub_path, $model_stub_path, $request_stub_path, $resource_stub_path, $view_stub_path, $controller_path, $view_controller_path, $model_path, $request_path, $resource_path, $view_path, $ignored_fields, $files, $indent_count, $schema;
+    protected $model, $controller_stub_path, $view_controller_stub_path, $model_stub_path, $request_stub_path, $resource_stub_path, $view_stub_path, $controller_path, $view_controller_path, $model_path, $request_path, $resource_path, $view_path, $component_path, $ignored_fields, $files, $indent_count, $schema;
 
     public function __construct($model)
     {
@@ -30,6 +30,7 @@ class Generator
         $this->request_path = app_path('Http/Requests/');
         $this->resource_path = app_path('Http/Resources/');
         $this->view_path = resource_path('views/' . strtr($this->model, ['_' => '']) . '/');
+        $this->component_path = resource_path('views/components/');
 
         //set ignored database columns
         $this->ignored_fields = [
@@ -83,6 +84,9 @@ class Generator
         $this->makeView('edit', $this->getEditViewContents());
         $this->makeView('index', $this->getIndexViewContents());
         $this->makeView('show', $this->getShowViewContents());
+
+        $this->makeDirectory($this->component_path);
+        $this->copyComponents();
     }
 
     public function insertTab($count = 1)
@@ -132,7 +136,17 @@ class Generator
 
     public function getFormElement($column, $old = false)
     {
-        return '<div class="form-group row">' . PHP_EOL . $this->insertTab(3) . '<label class="col-md-4 col-form-label text-md-right">' . strtr(ucfirst($this->getRelationFieldName($column->getName())), ['_' => ' ']) . '</label>' . PHP_EOL . $this->insertTab(3) . '<div class="col-md-6"><input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '"' . (($old) ? ' value="{{$' . str_singular($this->model) . '->' . $column->getName() . '}}"' : '') . ' class="form-control">' . PHP_EOL . $this->insertTab(2) . '</div>' . PHP_EOL . '</div>';
+        $name = $column->getName();
+        $label = strtr(ucfirst($this->getRelationFieldName($column->getName())), ['_' => ' ']);
+        $type = $this->doctrineToHtmlInput($column->getType());
+        $value = (($old) ? ',\'value\'=>$' . str_singular($this->model) . '->' . $column->getName() : '');
+
+        return '@component(\'components.input\',[\'name\'=>\'' . $name . '\',\'label\'=>\'' . $label . '\',\'type\'=>\'' . $type . '\'' . $value . ']) @endcomponent';
+    }
+
+    public function getModelRelationFunction($column)
+    {
+        return 'public function ' . lcfirst(strtr(ucwords(strtr($this->getRelationFieldName($column->getName()), ['_' => ' '])), [' ' => ''])) . '()' . PHP_EOL . $this->insertTab() . '{' . PHP_EOL . $this->insertTab(2) . 'return $this->belongsTo(' . strtr(str_singular(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' ']))), [' ' => '']) . '::class);' . PHP_EOL . $this->insertTab() . '} ';
     }
 
     public function makeDirectory($path)
@@ -173,7 +187,7 @@ class Generator
 
             if ($this->isRelationField($column->getName())) {
 
-                $model_relationship_functions .= 'public function ' . lcfirst(strtr(ucwords(strtr($this->getRelationFieldName($column->getName()), ['_' => ' '])), [' ' => ''])) . '()' . PHP_EOL . $this->insertTab() . '{' . PHP_EOL . $this->insertTab(2) . 'return $this->belongsTo(' . strtr(str_singular(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' ']))), [' ' => '']) . '::class);' . PHP_EOL . $this->insertTab() . '} ';
+                $model_relationship_functions .= $this->getModelRelationFunction($column);
             }
         }
 
@@ -306,7 +320,7 @@ class Generator
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
                 if ($model_form_fields != '') {
-                    $model_form_fields .= PHP_EOL . $this->insertTab(2);
+                    $model_form_fields .= PHP_EOL . $this->insertTab(7);
                 }
                 $model_form_fields .= $this->getFormElement($column);
             }
@@ -330,7 +344,7 @@ class Generator
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
                 if ($model_form_fields != '') {
-                    $model_form_fields .= PHP_EOL . $this->insertTab(2);
+                    $model_form_fields .= PHP_EOL . $this->insertTab(7);
                 }
                 $model_form_fields .= $this->getFormElement($column, true);
             }
@@ -380,7 +394,7 @@ class Generator
                 $model_table_head .= PHP_EOL . $this->insertTab(9);
             }
 
-            if($column->getName()=='id'){
+            if ($column->getName() == 'id') {
                 $model_table_head .= '<th>#</th>';
             } else {
                 $model_table_head .= '<th>' . strtr(ucfirst($column_heading), ['_' => ' ']) . '</th>';
@@ -438,4 +452,17 @@ class Generator
         }
     }
 
+    public function copyComponents()
+    {
+        $component_path = base_path('vendor/morganrowse/laravelcrud/src/resources/views/components/');
+
+        $components = [
+            'input',
+            'select'
+        ];
+
+        foreach ($components as $component) {
+            copy($component_path . $component . '.blade.php', $this->component_path . $component . '.blade.php');
+        }
+    }
 }
