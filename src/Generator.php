@@ -182,7 +182,7 @@ class Generator
                 if ($model_rule_fields != '') {
                     $model_rule_fields .= ',' . PHP_EOL . $this->insertTab(2);
                 }
-                $model_rule_fields .= '\'' . $column->getName() . '\' => \'\'';
+                $model_rule_fields .= '\'' . $column->getName() . '\' => \'' . $this->getFieldRules($column) . '\'';
             }
 
             if ($this->isRelationField($column->getName())) {
@@ -464,5 +464,28 @@ class Generator
         foreach ($components as $component) {
             copy($component_path . $component . '.blade.php', $this->component_path . $component . '.blade.php');
         }
+    }
+
+    public function getFieldRules($column)
+    {
+        $rules = '';
+
+        if ($column->getNotnull()) {
+            if ($rules != '') {
+                $rules .= '|';
+            }
+
+            $rules .= 'required';
+        }
+
+        if ($column->getLength() > 0) {
+            if ($rules != '') {
+                $rules .= '|';
+            }
+
+            $rules .= 'max:' . $column->getLength();
+        }
+
+        return $rules;
     }
 }
