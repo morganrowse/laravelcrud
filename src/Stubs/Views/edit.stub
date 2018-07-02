@@ -3,17 +3,29 @@
 @section('title', 'Edit %model_singular%')
 
 @section('content')
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">Edit %model_singular%</div>
+                    <div class="card-body">
+                        <form method="POST" action="{{route('%model_update_route%',$%model_item%)}}">
+                            {{method_field('PUT')}}
+                            {{csrf_field()}}
 
-<h1>Edit %model_singular%</h1>
+                            %model_form_fields%
 
-<form method="POST" action="{{route('%model_update_route%',$%model_item%)}}">
-
-{{method_field('PUT')}}
-{{csrf_field()}}
-
-%model_form_fields%
-
-<button type="submit">Update</button>
-</form>
-
+                            <div class="form-group row mb-0">
+                                <div class="col-md-8 offset-md-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        Update
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

@@ -130,9 +130,9 @@ class Generator
         return strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']);
     }
 
-    public function getFormElement($column, $hasOld = false)
+    public function getFormElement($column, $old = false)
     {
-        return '<div>' . PHP_EOL . $this->insertTab(3) . '<label>' . strtr(ucfirst($this->getRelationFieldName($column->getName())), ['_' => ' ']) . '</label>' . PHP_EOL . $this->insertTab(3) . '<input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '">' . PHP_EOL . $this->insertTab(2) . '</div>';
+        return '<div class="form-group row">' . PHP_EOL . $this->insertTab(3) . '<label class="col-md-4 col-form-label text-md-right">' . strtr(ucfirst($this->getRelationFieldName($column->getName())), ['_' => ' ']) . '</label>' . PHP_EOL . $this->insertTab(3) . '<div class="col-md-6"><input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '"' . (($old) ? ' value="{{$' . str_singular($this->model) . '->' . $column->getName() . '}}"' : '') . ' class="form-control">' . PHP_EOL . $this->insertTab(2) . '</div>' . PHP_EOL . '</div>';
     }
 
     public function makeDirectory($path)
@@ -329,7 +329,10 @@ class Generator
 
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
-                $model_form_fields .= '<div><label>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</label><input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '" value="{{$' . str_singular($this->model) . '->' . $column->getName() . '}}"></div>';
+                if ($model_form_fields != '') {
+                    $model_form_fields .= PHP_EOL . $this->insertTab(2);
+                }
+                $model_form_fields .= $this->getFormElement($column, true);
             }
         }
 
@@ -377,7 +380,11 @@ class Generator
                 $model_table_head .= PHP_EOL . $this->insertTab(9);
             }
 
-            $model_table_head .= '<th>' . strtr(ucfirst($column_heading), ['_' => ' ']) . '</th>';
+            if($column->getName()=='id'){
+                $model_table_head .= '<th>#</th>';
+            } else {
+                $model_table_head .= '<th>' . strtr(ucfirst($column_heading), ['_' => ' ']) . '</th>';
+            }
         }
 
         $model_item_table_row .= PHP_EOL . $this->insertTab(10) . '<td>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.show\',$' . $model_item . '->id)}}">View</a>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.edit\',$' . $model_item . '->id)}}">Edit</a>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="#" onclick="event.preventDefault(); document.getElementById(\'delete_' . $this->model . '_form-{{$' . $model_item . '->id}}\').submit();">Delete</a>' . PHP_EOL . $this->insertTab(11) . '<form id="delete_' . $this->model . '_form-{{$' . $model_item . '->id}}" method="POST" action="{{route(\'' . strtr($this->model, ['_' => '']) . '.destroy\',$' . $model_item . ')}}">' . PHP_EOL . $this->insertTab(12) . '{{method_field(\'DELETE\')}}' . PHP_EOL . $this->insertTab(12) . '{{csrf_field()}}' . PHP_EOL . $this->insertTab(11) . '</form>' . PHP_EOL . $this->insertTab(10) . '</td>';
@@ -405,6 +412,7 @@ class Generator
         }
 
         $search_replace = [
+            '%model_singular%' => ucfirst(strtr(str_singular($this->model), ['_' => ' '])),
             '%model_item%' => '$' . str_singular($this->model),
             '%model_fields%' => $model_fields
         ];
