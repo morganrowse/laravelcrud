@@ -3,6 +3,7 @@
 namespace %namespace%Http\Controllers;
 
 use %namespace%%model_class%;
+use %namespace%Http\Resources\%model_class%Resource;
 use %namespace%Http\Requests\%model_class%\Store%model_class%;
 use %namespace%Http\Requests\%model_class%\Update%model_class%;
 use %namespace%Http\Requests\%model_class%\Destroy%model_class%;
@@ -11,45 +12,32 @@ class %model_class%Controller extends Controller
 {
     public function index()
     {
-        $%model_items% = %model_class%::get();
-
-        return view('%view_path%.index')->with(['%model_items%'=>$%model_items%]);
-    }
-
-    public function create()
-    {
-        return view('%view_path%.create');
+        return %model_class%Resource::collection(%model_class%::simplePaginate());
     }
 
     public function store(Store%model_class% $request)
     {
-        %model_class%::create($request->all());
+        $%model_item% = %model_class%::create($request->all());
 
-        return redirect()->route('%view_path%.index');
+        return new %model_class%Resource($%model_item%);
     }
 
     public function show(%model_class% $%model_item%)
     {
-        return view('%view_path%.show')->with(['%model_item%'=>$%model_item%]);
+        return new %model_class%Resource($%model_item%);
     }
-
-    public function edit(%model_class% $%model_item%)
-        {
-            return view('%view_path%.edit')->with(['%model_item%'=>$%model_item%]);
-        }
 
     public function update(Update%model_class% $request, %model_class% $%model_item%)
     {
-        $%model_item%->fill($request->all());
-        $%model_item%->save();
+        $%model_item%->update($request->all());
 
-        return redirect()->route('%view_path%.index');
+        return new %model_class%Resource($%model_item%);
     }
 
     public function destroy(Destroy%model_class% $request, %model_class% $%model_item%)
     {
-        %model_destroy%
+        $%model_item%->delete();
 
-        return redirect()->route('%view_path%.index');
+        return response('', 200);
     }
 }

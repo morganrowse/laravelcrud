@@ -1,0 +1,61 @@
+<?php
+namespace %namespace%Http\Controllers\View;
+
+use %namespace%%model_class%;
+use %namespace%Http\Controllers\%model_class%Controller as ParentController;
+use %namespace%Http\Controllers\Controller;
+use %namespace%Http\Requests\%model_class%\Store%model_class%;
+use %namespace%Http\Requests\%model_class%\Update%model_class%;
+use %namespace%Http\Requests\%model_class%\Destroy%model_class%;
+
+class %model_class%Controller extends Controller
+{
+    public function index()
+    {
+        $%model_items% = (new ParentController())->index();
+
+        return view('%view_path%.index', compact('%model_items%'));
+    }
+
+    public function create()
+    {
+        return view('%view_path%.create');
+    }
+
+    public function store(Store%model_class% $request)
+    {
+        (new ParentController())->store($request);
+
+        $request->session()->flash('success', '%model_class% created.');
+
+        return redirect()->back();
+    }
+
+    public function show(%model_class% $%model_item%)
+    {
+        return view('%view_path%.show', compact('%model_item%'));
+    }
+
+    public function edit(%model_class% $%model_item%)
+    {
+        return view('%view_path%.edit', compact('%model_item%'));
+    }
+
+    public function update(Update%model_class% $request, %model_class% $%model_item%)
+    {
+        (new ParentController())->update($request, $%model_item%);
+
+        $request->session()->flash('success', '%model_class% updated.');
+
+        return redirect()->back();
+    }
+
+    public function destroy(Destroy%model_class% $request, %model_class% $%model_item%)
+    {
+        (new ParentController())->destroy($request, $%model_item%);
+
+        $request->session()->flash('success', '%model_class% deleted.');
+
+        return redirect()->back();
+    }
+}

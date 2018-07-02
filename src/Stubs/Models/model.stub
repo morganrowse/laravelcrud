@@ -10,5 +10,9 @@ class %model_class% extends Model
         %model_fillable_fields%
     ];
 
+    public static $rules = [
+        %model_rule_fields%
+    ];
+
     %model_relationship_functions%
 }

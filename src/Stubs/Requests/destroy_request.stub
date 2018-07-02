@@ -2,6 +2,7 @@
 
 namespace %namespace%Http\Requests\%model_class%;
 
+use %namespace%%model_class%;
 use Illuminate\Foundation\Http\FormRequest;
 
 class Destroy%model_class% extends FormRequest
@@ -13,8 +14,6 @@ class Destroy%model_class% extends FormRequest
 
     public function rules()
     {
-        return [
-            %request_rules%
-        ];
+        return %model_class%::$rules;
     }
 }

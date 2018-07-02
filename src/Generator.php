@@ -9,42 +9,57 @@ class Generator
 {
     use DetectsApplicationNamespace;
 
-    protected $stub_path, $view_stub_path, $view_path, $model_path, $controller_path, $resource_path, $request_path, $schema, $ignored_fields;
+    protected $model, $controller_stub_path, $view_controller_stub_path, $model_stub_path, $request_stub_path, $resource_stub_path, $view_stub_path, $controller_path, $view_controller_path, $model_path, $request_path, $resource_path, $view_path, $ignored_fields, $files, $indent_count, $schema;
 
     public function __construct($model)
     {
         $this->model = $model;
-        $this->stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/');
+
+        //set paths for stubbed resources
+        $this->controller_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Controllers/');
+        $this->view_controller_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Controllers/View/');
+        $this->model_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Models/');
+        $this->request_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Requests/');
+        $this->resource_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Resources/');
         $this->view_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Views/');
-        $this->model_path = app_path() . '/';
+
+        //set paths for generated resources
         $this->controller_path = app_path('Http/Controllers/');
-        $this->resource_path = app_path('Http/Resources/');
+        $this->view_controller_path = app_path('Http/Controllers/View/');
+        $this->model_path = app_path() . '/';
         $this->request_path = app_path('Http/Requests/');
-        $this->view_path = base_path('resources/views/' . strtr($this->model, ['_' => '']) . '/');
+        $this->resource_path = app_path('Http/Resources/');
+        $this->view_path = resource_path('views/' . strtr($this->model, ['_' => '']) . '/');
+
+        //set ignored database columns
         $this->ignored_fields = [
             'id',
             'created_at',
             'updated_at',
             'deleted_at'
         ];
+
+        //set paths for all generated resources
         $this->files = [
             $this->view_path . 'create.blade.php',
             $this->view_path . 'edit.blade.php',
             $this->view_path . 'index.blade.php',
             $this->view_path . 'show.blade.php',
             $this->controller_path . $this->getClassName() . 'Controller.php',
+            $this->view_controller_path . $this->getClassName() . 'Controller.php',
             $this->model_path . $this->getClassName() . '.php',
             $this->resource_path . $this->getClassName() . 'Resource.php',
             $this->request_path . 'Destroy' . $this->getClassName() . '.php',
             $this->request_path . 'Store' . $this->getClassName() . '.php',
             $this->request_path . 'Update' . $this->getClassName() . '.php'
         ];
+
+        //set number of spaces for indentation
         $this->indent_count = 4;
     }
 
     public function generate()
     {
-        $this->makeDirectory($this->view_path);
         $this->schema = DB::connection()->getDoctrineSchemaManager()->listTableColumns($this->model);
 
         $this->makeModel($this->getModelContents());
@@ -57,8 +72,13 @@ class Generator
         $this->makeRequest('Store', $this->getStoreRequestContents());
         $this->makeRequest('Update', $this->getUpdateRequestContents());
 
+        $this->makeDirectory($this->controller_path);
         $this->makeController($this->getControllerContents());
 
+        $this->makeDirectory($this->view_controller_path);
+        $this->makeViewController($this->getViewControllerContents());
+
+        $this->makeDirectory($this->view_path);
         $this->makeView('create', $this->getCreateViewContents());
         $this->makeView('edit', $this->getEditViewContents());
         $this->makeView('index', $this->getIndexViewContents());
@@ -68,15 +88,6 @@ class Generator
     public function insertTab($count = 1)
     {
         return str_repeat(str_repeat(' ', $this->indent_count), $count);
-    }
-
-    public function removeExistingCrud()
-    {
-        foreach ($this->files as $file) {
-            if (file_exists($file)) {
-                unlink($file);
-            }
-        }
     }
 
     public function hasExistingCrud()
@@ -90,36 +101,38 @@ class Generator
         return false;
     }
 
+    public function removeExistingCrud()
+    {
+        foreach ($this->files as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
+
     public function isIgnoredField($field)
     {
-        if (array_search($field, $this->ignored_fields) !== FALSE) {
-            return true;
-        } else {
-            return false;
-        }
+        return (array_search($field, $this->ignored_fields) !== FALSE);
     }
 
     public function isRelationField($field)
     {
-        if (substr($field, -3) == '_id') {
-            return true;
-        } else {
-            return false;
-        }
+        return (substr($field, -3) == '_id');
     }
 
     public function getRelationFieldName($field)
     {
-        if (substr($field, -3) == '_id') {
-            return substr($field, 0, -3);
-        } else {
-            return $field;
-        }
+        return ($this->isRelationField($field) ? substr($field, 0, -3) : $field);
     }
 
     public function getClassName()
     {
         return strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']);
+    }
+
+    public function getFormElement($column, $hasOld = false)
+    {
+        return '<div>' . PHP_EOL . $this->insertTab(3) . '<label>' . strtr(ucfirst($this->getRelationFieldName($column->getName())), ['_' => ' ']) . '</label>' . PHP_EOL . $this->insertTab(3) . '<input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '">' . PHP_EOL . $this->insertTab(2) . '</div>';
     }
 
     public function makeDirectory($path)
@@ -140,9 +153,10 @@ class Generator
 
     public function getModelContents()
     {
-        $contents = file_get_contents($this->stub_path . 'Models/model.stub');
+        $contents = file_get_contents($this->model_stub_path . 'model.stub');
 
         $model_fillable_fields = '';
+        $model_rule_fields = '';
         $model_relationship_functions = '';
 
         foreach ($this->schema as $column) {
@@ -151,10 +165,15 @@ class Generator
                     $model_fillable_fields .= ',' . PHP_EOL . $this->insertTab(2);
                 }
                 $model_fillable_fields .= '\'' . $column->getName() . '\'';
+                if ($model_rule_fields != '') {
+                    $model_rule_fields .= ',' . PHP_EOL . $this->insertTab(2);
+                }
+                $model_rule_fields .= '\'' . $column->getName() . '\' => \'\'';
             }
 
             if ($this->isRelationField($column->getName())) {
-                $model_relationship_functions .= 'public function ' . lcfirst(strtr(ucwords(strtr($this->getRelationFieldName($column->getName()), ['_' => ' '])), [' ' => ''])) . '()' . PHP_EOL . $this->insertTab() . '{' . PHP_EOL . $this->insertTab(2) . 'return $this->belongsTo(\'' . $this->getAppNamespace() . '\\' . strtr(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' '])), [' ' => '']) . '\');' . PHP_EOL . $this->insertTab() . '} ';
+
+                $model_relationship_functions .= 'public function ' . lcfirst(strtr(ucwords(strtr($this->getRelationFieldName($column->getName()), ['_' => ' '])), [' ' => ''])) . '()' . PHP_EOL . $this->insertTab() . '{' . PHP_EOL . $this->insertTab(2) . 'return $this->belongsTo(' . strtr(str_singular(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' ']))), [' ' => '']) . '::class);' . PHP_EOL . $this->insertTab() . '} ';
             }
         }
 
@@ -162,6 +181,7 @@ class Generator
             '%namespace%' => rtrim($this->getAppNamespace(), '\\'),
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
             '%model_fillable_fields%' => $model_fillable_fields,
+            '%model_rule_fields%' => $model_rule_fields,
             '%model_relationship_functions%' => $model_relationship_functions
         ];
 
@@ -177,7 +197,7 @@ class Generator
 
     public function getResourceContents()
     {
-        $contents = file_get_contents($this->stub_path . 'Resources/resource.stub');
+        $contents = file_get_contents($this->resource_stub_path . 'resource.stub');
 
         $search_replace = [
             '%namespace%' => rtrim($this->getAppNamespace(), '\\'),
@@ -194,14 +214,11 @@ class Generator
 
     public function getDestroyRequestContents()
     {
-        $contents = file_get_contents($this->stub_path . 'Requests/destroy_request.stub');
-
-        $request_rules = '';
+        $contents = file_get_contents($this->request_stub_path . 'destroy_request.stub');
 
         $search_replace = [
             '%namespace%' => $this->getAppNamespace(),
             '%model_class%' => $this->getClassName(),
-            '%request_rules%' => $request_rules
         ];
 
         return strtr($contents, $search_replace);
@@ -209,23 +226,11 @@ class Generator
 
     public function getStoreRequestContents()
     {
-        $contents = file_get_contents($this->stub_path . 'Requests/store_request.stub');
-
-        $request_rules = '';
-
-        foreach ($this->schema as $column) {
-            if (!$this->isIgnoredField($column->getName())) {
-                if ($request_rules != '') {
-                    $request_rules .= ',' . PHP_EOL . $this->insertTab(3);
-                }
-                $request_rules .= '\'' . $column->getName() . '\' => \'' . (($column->getNotNull()) ? 'required' : '') . (($this->isRelationField($column->getName()) ? '|exists:' . str_plural(substr($column->getName(), 0, -3)) . ',id' : '')) . '\'';
-            }
-        }
+        $contents = file_get_contents($this->request_stub_path . 'store_request.stub');
 
         $search_replace = [
             '%namespace%' => $this->getAppNamespace(),
-            '%model_class%' => $this->getClassName(),
-            '%request_rules%' => $request_rules
+            '%model_class%' => $this->getClassName()
         ];
 
         return strtr($contents, $search_replace);
@@ -233,23 +238,11 @@ class Generator
 
     public function getUpdateRequestContents()
     {
-        $contents = file_get_contents($this->stub_path . 'Requests/update_request.stub');
-
-        $request_rules = '';
-
-        foreach ($this->schema as $column) {
-            if (!$this->isIgnoredField($column->getName())) {
-                if ($request_rules != '') {
-                    $request_rules .= ',' . PHP_EOL . $this->insertTab(3);
-                }
-                $request_rules .= '\'' . $column->getName() . '\' => \'' . (($column->getNotNull()) ? 'required' : '') . (($this->isRelationField($column->getName()) ? '|exists:' . str_plural(substr($column->getName(), 0, -3)) . ',id' : '')) . '\'';
-            }
-        }
+        $contents = file_get_contents($this->request_stub_path . 'update_request.stub');
 
         $search_replace = [
             '%namespace%' => $this->getAppNamespace(),
-            '%model_class%' => $this->getClassName(),
-            '%request_rules%' => $request_rules
+            '%model_class%' => $this->getClassName()
         ];
 
         return strtr($contents, $search_replace);
@@ -257,7 +250,6 @@ class Generator
 
     public function makeController($contents)
     {
-
         file_put_contents($this->controller_path . $this->getClassName() . 'Controller.php', $contents);
 
         return null;
@@ -265,16 +257,36 @@ class Generator
 
     public function getControllerContents()
     {
-        $contents = file_get_contents($this->stub_path . 'Controllers/controller.stub');
+        $contents = file_get_contents($this->controller_stub_path . 'controller.stub');
 
         $search_replace = [
             '%namespace%' => $this->getAppNamespace(),
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
-            '%model%' => $this->model,
             '%view_path%' => strtr($this->model, ['_' => '']),
             '%model_items%' => $this->model,
-            '%model_item%' => str_singular($this->model),
-            '%model_destroy%' => '$' . str_singular($this->model) . '->delete();'
+            '%model_item%' => str_singular($this->model)
+        ];
+
+        return strtr($contents, $search_replace);
+    }
+
+    public function makeViewController($contents)
+    {
+        file_put_contents($this->view_controller_path . $this->getClassName() . 'Controller.php', $contents);
+
+        return null;
+    }
+
+    public function getViewControllerContents()
+    {
+        $contents = file_get_contents($this->view_controller_stub_path . 'controller.stub');
+
+        $search_replace = [
+            '%namespace%' => $this->getAppNamespace(),
+            '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
+            '%view_path%' => strtr($this->model, ['_' => '']),
+            '%model_items%' => $this->model,
+            '%model_item%' => str_singular($this->model)
         ];
 
         return strtr($contents, $search_replace);
@@ -307,11 +319,6 @@ class Generator
         ];
 
         return strtr($contents, $search_replace);
-    }
-
-    public function getFormElement($column, $hasOld = false)
-    {
-        return '<div>' . PHP_EOL . $this->insertTab(3) . '<label>' . strtr(ucfirst($this->getRelationFieldName($column->getName())), ['_' => ' ']) . '</label>' . PHP_EOL . $this->insertTab(3) . '<input name="' . $column->getName() . '" type="' . $this->doctrineToHtmlInput($column->getType()) . '">' . PHP_EOL . $this->insertTab(2) . '</div>';
     }
 
     public function getEditViewContents()
@@ -415,8 +422,4 @@ class Generator
         }
     }
 
-    public function setViewStubPath($view_stub_path)
-    {
-        $this->view_stub_path = $view_stub_path;
-    }
 }

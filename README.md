@@ -38,11 +38,15 @@ app
 └───Http
 │   └───Controllers
 │   │   │   PostController.php
+│   |   └───View
+│   │   │   |   PostController.php
 │   └───Requests
 │   │   └───Post
-│   │   │   │   DestroyPostRequest.php
-│   │   │   │   StorePostRequest.php
-│   │   │   │   UpdatePostRequest.php
+│   │   │   │   DestroyPost.php
+│   │   │   │   StorePost.php
+│   │   │   │   UpdatePost.php
+│   └───Resources
+│   │   │   PostResource.php
 resources
 └───views
 │   └───posts
@@ -52,11 +56,19 @@ resources
 │   │   │   show.blade.php
 ```
 
-Now add the resource route to your **web.php**
+Now add the view routes to your **web.php**
 
-```
+```php
 ...
-Route::resource('posts','PostController');
+Route::resource('posts','View\\PostController');
+...
+```
+
+Finally add the api routes to your **api.php**
+
+```php
+...
+Route::apiResource('posts','PostController');
 ...
 ```
 
