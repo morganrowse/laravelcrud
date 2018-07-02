@@ -3,27 +3,36 @@
 @section('title', '%model_plural%')
 
 @section('content')
-
-<h1>%model_plural%</h1>
-<p><a href="{{route('%model_create_route%')}}">New..</a></p>
-
-<table>
-    <thead>
-        <tr>
-            %model_table_head%
-            <th>Actions</th>
-        </tr>
-    </thead>
-
-    @forelse(%model_items% as %model_item%)
-        <tr>
-            %model_item_table_row%
-        </tr>
-    @empty
-        <tr>
-            <td colspan="100%">No data exists</td>
-        </tr>
-    @endforelse
-</table>
-
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">%model_plural% <a href="{{route('%model_create_route%')}}">New..</a></div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    %model_table_head%
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @forelse(%model_items% as %model_item%)
+                                    <tr>
+                                        %model_item_table_row%
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="100%" class="text-center">No data exists</td>
+                                    </tr>
+                                @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

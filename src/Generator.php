@@ -357,6 +357,10 @@ class Generator
         foreach ($this->schema as $column) {
             $column_heading = $column->getName();
 
+            if ($model_item_table_row != '') {
+                $model_item_table_row .= PHP_EOL . $this->insertTab(10);
+            }
+
             if (in_array($column->getName(), ['created_at', 'updated_at', 'deleted_at'])) {
                 $model_item_table_row .= '<td>{{$' . $model_item . '->' . $column->getName() . '->diffForHumans()}}</td>';
 
@@ -369,10 +373,14 @@ class Generator
                 }
             }
 
+            if ($model_table_head != '') {
+                $model_table_head .= PHP_EOL . $this->insertTab(9);
+            }
+
             $model_table_head .= '<th>' . strtr(ucfirst($column_heading), ['_' => ' ']) . '</th>';
         }
 
-        $model_item_table_row .= '<td><a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.show\',$' . $model_item . '->id)}}">View</a><a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.edit\',$' . $model_item . '->id)}}">Edit</a><form method="POST" action="{{route(\'' . strtr($this->model, ['_' => '']) . '.destroy\',$' . $model_item . ')}}">{{method_field(\'DELETE\')}}{{csrf_field()}}<button class="btn" type="submit">Delete</button></form></td>';
+        $model_item_table_row .= PHP_EOL . $this->insertTab(10) . '<td>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.show\',$' . $model_item . '->id)}}">View</a>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.edit\',$' . $model_item . '->id)}}">Edit</a>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="#" onclick="event.preventDefault(); document.getElementById(\'delete_' . $this->model . '_form-{{$' . $model_item . '->id}}\').submit();">Delete</a>' . PHP_EOL . $this->insertTab(11) . '<form id="delete_' . $this->model . '_form-{{$' . $model_item . '->id}}" method="POST" action="{{route(\'' . strtr($this->model, ['_' => '']) . '.destroy\',$' . $model_item . ')}}">' . PHP_EOL . $this->insertTab(12) . '{{method_field(\'DELETE\')}}' . PHP_EOL . $this->insertTab(12) . '{{csrf_field()}}' . PHP_EOL . $this->insertTab(11) . '</form>' . PHP_EOL . $this->insertTab(10) . '</td>';
 
         $search_replace = [
             '%model_plural%' => $model_plural,
