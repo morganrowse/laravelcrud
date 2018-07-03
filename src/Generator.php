@@ -63,6 +63,13 @@ class Generator
     {
         $this->schema = DB::connection()->getDoctrineSchemaManager()->listTableColumns($this->model);
 
+        if ($this->tableExists()) {
+            echo 'Table: ' . $this->model . ' does not exist.';
+            die();
+        }
+
+        //dd($this->schema);
+
         $this->makeModel($this->getModelContents());
 
         $this->makeDirectory($this->resource_path);
@@ -87,6 +94,11 @@ class Generator
 
         $this->makeDirectory($this->component_path);
         $this->copyComponents();
+    }
+
+    public function tableExists()
+    {
+        return empty($this->schema);
     }
 
     public function insertTab($count = 1)
@@ -452,6 +464,24 @@ class Generator
         }
     }
 
+    public function doctrineToValidationRuleType($doctrine_type)
+    {
+        switch ($doctrine_type) {
+            case 'Integer':
+                return 'integer';
+                break;
+            case 'String':
+                return 'string';
+                break;
+            case 'DateTime':
+                return 'date';
+                break;
+            default:
+                return null;
+                break;
+        }
+    }
+
     public function copyComponents()
     {
         $component_path = base_path('vendor/morganrowse/laravelcrud/src/resources/views/components/');
@@ -466,22 +496,33 @@ class Generator
         }
     }
 
+    public function addRulePipe($rules)
+    {
+        if ($rules != '') {
+            return $rules . '|';
+        } else {
+            return $rules;
+        }
+    }
+
     public function getFieldRules($column)
     {
         $rules = '';
 
         if ($column->getNotnull()) {
-            if ($rules != '') {
-                $rules .= '|';
-            }
+            $rules = $this->addRulePipe($rules);
 
             $rules .= 'required';
         }
 
+        if (!is_null($this->doctrineToValidationRuleType($column->getType()))) {
+            $rules = $this->addRulePipe($rules);
+
+            $rules .= $this->doctrineToValidationRuleType($column->getType());
+        }
+
         if ($column->getLength() > 0) {
-            if ($rules != '') {
-                $rules .= '|';
-            }
+            $rules = $this->addRulePipe($rules);
 
             $rules .= 'max:' . $column->getLength();
         }
