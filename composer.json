@@ -1,7 +1,11 @@
 {
     "name": "morganrowse/laravelcrud",
     "description": "Artisan command to generate routing, views and controllers from a database table",
-    "keywords": ["laravel","artisan","crud"],
+    "keywords": [
+        "laravel",
+        "artisan",
+        "crud"
+    ],
     "homepage": "https://github.com/morganrowse/laravelcrud",
     "license": "MIT",
     "authors": [
@@ -22,10 +26,10 @@
         }
     },
     "extra": {
-    "laravel": {
-        "providers": [
-            "MorganRowse\\LaravelCrud\\ServiceProvider"
-        ]
+        "laravel": {
+            "providers": [
+                "MorganRowse\\LaravelCrud\\ServiceProvider"
+            ]
+        }
     }
-}
 }
