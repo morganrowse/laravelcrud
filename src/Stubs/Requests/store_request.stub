@@ -2,7 +2,7 @@
 
 namespace %namespace%Http\Requests;
 
-use %namespace%;
+use %namespace%%model_class%;
 use Illuminate\Foundation\Http\FormRequest;
 
 class Store%model_class% extends FormRequest

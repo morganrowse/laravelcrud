@@ -4,9 +4,9 @@ namespace %namespace%Http\Controllers\View;
 use %namespace%%model_class%;
 use %namespace%Http\Controllers\%model_class%Controller as ParentController;
 use %namespace%Http\Controllers\Controller;
-use %namespace%Http\Requests\%model_class%\Store%model_class%;
-use %namespace%Http\Requests\%model_class%\Update%model_class%;
-use %namespace%Http\Requests\%model_class%\Destroy%model_class%;
+use %namespace%Http\Requests\Store%model_class%;
+use %namespace%Http\Requests\Update%model_class%;
+use %namespace%Http\Requests\Destroy%model_class%;
 
 class %model_class%Controller extends Controller
 {
