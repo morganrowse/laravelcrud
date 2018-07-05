@@ -1,8 +1,8 @@
 <?php
 
-namespace %namespace%Http\Requests\%model_class%;
+namespace %namespace%Http\Requests;
 
-use %namespace%%model_class%;
+use %namespace%;
 use Illuminate\Foundation\Http\FormRequest;
 
 class Store%model_class% extends FormRequest
