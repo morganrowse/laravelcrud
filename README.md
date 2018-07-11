@@ -1,9 +1,10 @@
 # Laravel CRUD
 
+<a href="https://packagist.org/packages/morganrowse/laravelcrud"><img src="https://img.shields.io/packagist/dt/morganrowse/laravelcrud.svg?style=for-the-badge" alt="Downloads"></a>
 
-[![Packagist](https://img.shields.io/packagist/dt/morganrowse/laravelcrud.svg?style=for-the-badge)](https://packagist.org/packages/morganrowse/laravelcrud)
-![Packagist](https://img.shields.io/packagist/v/morganrowse/laravelcrud.svg?style=for-the-badge)
-[![Travis](https://img.shields.io/travis/morganrowse/laravelcrud.svg?style=for-the-badge)](https://travis-ci.org/morganrowse/laravelcrud)
+<a href="https://packagist.org/packages/morganrowse/laravelcrud"><img src="https://img.shields.io/packagist/v/morganrowse/laravelcrud.svg?style=for-the-badge" alt="Version"></a>
+
+<a href="https://travis-ci.org/morganrowse/laravelcrud"><img src="https://img.shields.io/travis/morganrowse/laravelcrud.svg?style=for-the-badge" alt="Travis"></a>
 
 This composer package adds artisan commands which create Models, Views, Controllers and Request Validation for crud operation based off of a database table schema.
 
