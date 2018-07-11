@@ -1,4 +1,6 @@
-<?php namespace MorganRowse\LaravelCrud;
+<?php
+
+namespace MorganRowse\LaravelCrud;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 

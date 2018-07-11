@@ -1,11 +1,12 @@
-<?php namespace MorganRowse\LaravelCrud\Commands;
+<?php
+
+namespace MorganRowse\LaravelCrud\Commands;
 
 use Illuminate\Console\Command;
 use MorganRowse\LaravelCrud\Generator;
 
 class MakeCrud extends Command
 {
-
     protected $signature = 'make:crud {model : The schema name} {--force}';
     protected $description = 'Generate CRUD from a table schema';
 

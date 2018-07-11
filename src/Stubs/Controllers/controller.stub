@@ -10,11 +10,23 @@ use %namespace%Http\Requests\Destroy%model_class%;
 
 class %model_class%Controller extends Controller
 {
+    /**
+     * Display a listing of %model_plural%.
+     *
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function index()
     {
         return %model_class%Resource::collection(%model_class%::simplePaginate());
     }
 
+    /**
+     * Store a newly created %model_singular% in storage.
+     *
+     * @param \%namespace%Http\Requests\Store%model_class% $request
+     *
+     * @return \%namespace%Http\Resources\%model_class%Resource
+     */
     public function store(Store%model_class% $request)
     {
         $%model_item% = %model_class%::create($request->all());
@@ -22,11 +34,26 @@ class %model_class%Controller extends Controller
         return new %model_class%Resource($%model_item%);
     }
 
+    /**
+     * Display the specified %model_singular%.
+     *
+     * @param \%namespace%%model_class% $%model_item%
+     *
+     * @return \%namespace%Http\Resources\%model_class%Resource
+     */
     public function show(%model_class% $%model_item%)
     {
         return new %model_class%Resource($%model_item%);
     }
 
+    /**
+     * Update the specified %model_singular% in storage.
+     *
+     * @param \%namespace%Http\Requests\Update%model_class% $request
+     * @param \%namespace%%model_class%                     $%model_item%
+     *
+     * @return \%namespace%Http\Resources\%model_class%Resource
+     */
     public function update(Update%model_class% $request, %model_class% $%model_item%)
     {
         $%model_item%->update($request->all());
@@ -34,6 +61,15 @@ class %model_class%Controller extends Controller
         return new %model_class%Resource($%model_item%);
     }
 
+    /**
+     * Remove the specified %model_singular% from storage.
+     *
+     * @param \%namespace%Http\Requests\Destroy%model_class% $request
+     * @param \%namespace%%model_class%                      $%model_item%
+     *
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function destroy(Destroy%model_class% $request, %model_class% $%model_item%)
     {
         $%model_item%->delete();

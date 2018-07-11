@@ -6,10 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class %model_class% extends Model
 {
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         %model_fillable_fields%
     ];
 
+    /**
+     * The rules used for model validation.
+     *
+     * @var array
+     */
     public static $rules = [
         %model_rule_fields%
     ];

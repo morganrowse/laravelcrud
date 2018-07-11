@@ -9,7 +9,24 @@ class Generator
 {
     use DetectsApplicationNamespace;
 
-    protected $model, $controller_stub_path, $view_controller_stub_path, $model_stub_path, $request_stub_path, $resource_stub_path, $view_stub_path, $controller_path, $view_controller_path, $model_path, $request_path, $resource_path, $view_path, $component_path, $ignored_fields, $files, $indent_count, $schema;
+    protected $model;
+    protected $controller_stub_path;
+    protected $view_controller_stub_path;
+    protected $model_stub_path;
+    protected $request_stub_path;
+    protected $resource_stub_path;
+    protected $view_stub_path;
+    protected $controller_path;
+    protected $view_controller_path;
+    protected $model_path;
+    protected $request_path;
+    protected $resource_path;
+    protected $view_path;
+    protected $component_path;
+    protected $ignored_fields;
+    protected $files;
+    protected $indent_count;
+    protected $schema;
 
     public function __construct($model)
     {
@@ -128,7 +145,7 @@ class Generator
 
     public function isIgnoredField($field)
     {
-        return (array_search($field, $this->ignored_fields) !== FALSE);
+        return (array_search($field, $this->ignored_fields) !== false);
     }
 
     public function isRelationField($field)
@@ -158,7 +175,7 @@ class Generator
 
     public function getModelRelationFunction($column)
     {
-        return 'public function ' . lcfirst(strtr(ucwords(strtr($this->getRelationFieldName($column->getName()), ['_' => ' '])), [' ' => ''])) . '()' . PHP_EOL . $this->insertTab() . '{' . PHP_EOL . $this->insertTab(2) . 'return $this->belongsTo(' . strtr(str_singular(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' ']))), [' ' => '']) . '::class);' . PHP_EOL . $this->insertTab() . '} ';
+        return '/**' . PHP_EOL . $this->insertTab() . ' * @return \Illuminate\Database\Eloquent\Relations\BelongsTo' . PHP_EOL . $this->insertTab() . ' */' . PHP_EOL . $this->insertTab() . 'public function ' . lcfirst(strtr(ucwords(strtr($this->getRelationFieldName($column->getName()), ['_' => ' '])), [' ' => ''])) . '()' . PHP_EOL . $this->insertTab() . '{' . PHP_EOL . $this->insertTab(2) . 'return $this->belongsTo(' . strtr(str_singular(ucwords(strtr(substr($column->getName(), 0, -3), ['_' => ' ']))), [' ' => '']) . '::class);' . PHP_EOL . $this->insertTab() . '}';
     }
 
     public function makeDirectory($path)
@@ -198,6 +215,9 @@ class Generator
             }
 
             if ($this->isRelationField($column->getName())) {
+                if ($model_relationship_functions != '') {
+                    $model_relationship_functions .= PHP_EOL . PHP_EOL . $this->insertTab();
+                }
 
                 $model_relationship_functions .= $this->getModelRelationFunction($column);
             }
@@ -290,7 +310,9 @@ class Generator
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
             '%view_path%' => strtr($this->model, ['_' => '']),
             '%model_items%' => $this->model,
-            '%model_item%' => str_singular($this->model)
+            '%model_item%' => str_singular($this->model),
+            '%model_plural%' => str_plural(str_singular(strtr($this->model, ['_' => ' ']))),
+            '%model_singular%' => str_singular(strtr($this->model, ['_' => ' ']))
         ];
 
         return strtr($contents, $search_replace);
@@ -312,7 +334,10 @@ class Generator
             '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
             '%view_path%' => strtr($this->model, ['_' => '']),
             '%model_items%' => $this->model,
-            '%model_item%' => str_singular($this->model)
+            '%model_item%' => str_singular($this->model),
+            '%model_plural%' => str_plural(str_singular(strtr($this->model, ['_' => ' ']))),
+            '%model_singular%' => str_singular(strtr($this->model, ['_' => ' '])),
+            '%model_confirmation%' => ucfirst(str_singular(strtr($this->model, ['_' => ' '])))
         ];
 
         return strtr($contents, $search_replace);
