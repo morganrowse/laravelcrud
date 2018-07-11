@@ -15,6 +15,3 @@ script:
   - php artisan key:generate
   - php artisan migrate
   - phpunit
-  
-script:
-  - phpdbg -qrr vendor/bin/phpunit --coverage-clover=coverage.xml
