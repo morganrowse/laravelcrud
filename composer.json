@@ -28,7 +28,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "MorganRowse\\LaravelCrud\\ServiceProvider"
+                "MorganRowse\\LaravelCrud\\LaravelCrudServiceProvider"
             ]
         }
     }
