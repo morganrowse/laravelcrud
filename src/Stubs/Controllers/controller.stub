@@ -1,78 +1,78 @@
 <?php
 
-namespace %namespace%Http\Controllers;
+namespace {{namespace}}Http\Controllers;
 
-use %namespace%%model_class%;
-use %namespace%Http\Resources\%model_class%Resource;
-use %namespace%Http\Requests\Store%model_class%;
-use %namespace%Http\Requests\Update%model_class%;
-use %namespace%Http\Requests\Destroy%model_class%;
+use {{namespace}}{{model_class}};
+use {{namespace}}Http\Resources\{{model_class}}Resource;
+use {{namespace}}Http\Requests\Store{{model_class}};
+use {{namespace}}Http\Requests\Update{{model_class}};
+use {{namespace}}Http\Requests\Destroy{{model_class}};
 
-class %model_class%Controller extends Controller
+class {{model_class}}Controller extends Controller
 {
     /**
-     * Display a listing of %model_plural%.
+     * Display a listing of {{model_plural}}.
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        return %model_class%Resource::collection(%model_class%::simplePaginate());
+        return {{model_class}}Resource::collection({{model_class}}::simplePaginate());
     }
 
     /**
-     * Store a newly created %model_singular% in storage.
+     * Store a newly created {{model_singular}} in storage.
      *
-     * @param \%namespace%Http\Requests\Store%model_class% $request
+     * @param \{{namespace}}Http\Requests\Store{{model_class}} $request
      *
-     * @return \%namespace%Http\Resources\%model_class%Resource
+     * @return \{{namespace}}Http\Resources\{{model_class}}Resource
      */
-    public function store(Store%model_class% $request)
+    public function store(Store{{model_class}} $request)
     {
-        $%model_item% = %model_class%::create($request->all());
+        ${{model_item}} = {{model_class}}::create($request->all());
 
-        return new %model_class%Resource($%model_item%);
+        return new {{model_class}}Resource(${{model_item}});
     }
 
     /**
-     * Display the specified %model_singular%.
+     * Display the specified {{model_singular}}.
      *
-     * @param \%namespace%%model_class% $%model_item%
+     * @param \{{namespace}}{{model_class}} ${{model_item}}
      *
-     * @return \%namespace%Http\Resources\%model_class%Resource
+     * @return \{{namespace}}Http\Resources\{{model_class}}Resource
      */
-    public function show(%model_class% $%model_item%)
+    public function show({{model_class}} ${{model_item}})
     {
-        return new %model_class%Resource($%model_item%);
+        return new {{model_class}}Resource(${{model_item}});
     }
 
     /**
-     * Update the specified %model_singular% in storage.
+     * Update the specified {{model_singular}} in storage.
      *
-     * @param \%namespace%Http\Requests\Update%model_class% $request
-     * @param \%namespace%%model_class%                     $%model_item%
+     * @param \{{namespace}}Http\Requests\Update{{model_class}} $request
+     * @param \{{namespace}}{{model_class}}                     ${{model_item}}
      *
-     * @return \%namespace%Http\Resources\%model_class%Resource
+     * @return \{{namespace}}Http\Resources\{{model_class}}Resource
      */
-    public function update(Update%model_class% $request, %model_class% $%model_item%)
+    public function update(Update{{model_class}} $request, {{model_class}} ${{model_item}})
     {
-        $%model_item%->update($request->all());
+        ${{model_item}}->update($request->all());
 
-        return new %model_class%Resource($%model_item%);
+        return new {{model_class}}Resource(${{model_item}});
     }
 
     /**
-     * Remove the specified %model_singular% from storage.
+     * Remove the specified {{model_singular}} from storage.
      *
-     * @param \%namespace%Http\Requests\Destroy%model_class% $request
-     * @param \%namespace%%model_class%                      $%model_item%
+     * @param \{{namespace}}Http\Requests\Destroy{{model_class}} $request
+     * @param \{{namespace}}{{model_class}}                      ${{model_item}}
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function destroy(Destroy%model_class% $request, %model_class% $%model_item%)
+    public function destroy(Destroy{{model_class}} $request, {{model_class}} ${{model_item}})
     {
-        $%model_item%->delete();
+        ${{model_item}}->delete();
 
         return response('', 200);
     }

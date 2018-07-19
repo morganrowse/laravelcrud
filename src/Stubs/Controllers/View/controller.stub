@@ -1,108 +1,108 @@
 <?php
 
-namespace %namespace%Http\Controllers\View;
+namespace {{namespace}}Http\Controllers\View;
 
-use %namespace%%model_class%;
-use %namespace%Http\Controllers\%model_class%Controller as ParentController;
-use %namespace%Http\Controllers\Controller;
-use %namespace%Http\Requests\Store%model_class%;
-use %namespace%Http\Requests\Update%model_class%;
-use %namespace%Http\Requests\Destroy%model_class%;
+use {{namespace}}{{model_class}};
+use {{namespace}}Http\Controllers\{{model_class}}Controller as ParentController;
+use {{namespace}}Http\Controllers\Controller;
+use {{namespace}}Http\Requests\Store{{model_class}};
+use {{namespace}}Http\Requests\Update{{model_class}};
+use {{namespace}}Http\Requests\Destroy{{model_class}};
 
-class %model_class%Controller extends Controller
+class {{model_class}}Controller extends Controller
 {
     /**
-     * Display a listing of %model_plural%.
+     * Display a listing of {{model_plural}}.
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
-        $%model_items% = (new ParentController())->index();
+        ${{model_items}} = (new ParentController())->index();
 
-        return view('%view_path%.index', compact('%model_items%'));
+        return view('{{view_path}}.index', compact('{{model_items}}'));
     }
 
     /**
-     * Show the form for creating a new %model_singular%.
+     * Show the form for creating a new {{model_singular}}.
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create()
     {
-        return view('%view_path%.create');
+        return view('{{view_path}}.create');
     }
 
     /**
-     * Store a newly created %model_singular% in storage.
+     * Store a newly created {{model_singular}} in storage.
      *
-     * @param \%namespace%Http\Requests\Store%model_class% $request
+     * @param \{{namespace}}Http\Requests\Store{{model_class}} $request
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Store%model_class% $request)
+    public function store(Store{{model_class}} $request)
     {
         (new ParentController())->store($request);
 
-        $request->session()->flash('success', '%model_confirmation% created.');
+        $request->session()->flash('success', '{{model_confirmation}} created.');
 
         return redirect()->back();
     }
 
     /**
-     * Display the specified %model_singular%.
+     * Display the specified {{model_singular}}.
      *
-     * @param \%namespace%%model_class% $%model_item%
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function show(%model_class% $%model_item%)
-    {
-        return view('%view_path%.show', compact('%model_item%'));
-    }
-
-    /**
-     * Show the form for editing the specified %model_singular%.
-     *
-     * @param \%namespace%%model_class% $%model_item%
+     * @param \{{namespace}}{{model_class}} ${{model_item}}
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(%model_class% $%model_item%)
+    public function show({{model_class}} ${{model_item}})
     {
-        return view('%view_path%.edit', compact('%model_item%'));
+        return view('{{view_path}}.show', compact('{{model_item}}'));
     }
 
     /**
-     * Update the specified %model_singular% in storage.
+     * Show the form for editing the specified {{model_singular}}.
      *
-     * @param \%namespace%Http\Requests\Update%model_class% $request
-     * @param \%namespace%%model_class%                     $%model_item%
+     * @param \{{namespace}}{{model_class}} ${{model_item}}
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function edit({{model_class}} ${{model_item}})
+    {
+        return view('{{view_path}}.edit', compact('{{model_item}}'));
+    }
+
+    /**
+     * Update the specified {{model_singular}} in storage.
+     *
+     * @param \{{namespace}}Http\Requests\Update{{model_class}} $request
+     * @param \{{namespace}}{{model_class}}                     ${{model_item}}
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Update%model_class% $request, %model_class% $%model_item%)
+    public function update(Update{{model_class}} $request, {{model_class}} ${{model_item}})
     {
-        (new ParentController())->update($request, $%model_item%);
+        (new ParentController())->update($request, ${{model_item}});
 
-        $request->session()->flash('success', '%model_confirmation% updated.');
+        $request->session()->flash('success', '{{model_confirmation}} updated.');
 
         return redirect()->back();
     }
 
     /**
-     * Remove the specified %model_singular% from storage.
+     * Remove the specified {{model_singular}} from storage.
      *
-     * @param \%namespace%Http\Requests\Destroy%model_class% $request
-     * @param \%namespace%%model_class%                      $%model_item%
+     * @param \{{namespace}}Http\Requests\Destroy{{model_class}} $request
+     * @param \{{namespace}}{{model_class}}                      ${{model_item}}
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Destroy%model_class% $request, %model_class% $%model_item%)
+    public function destroy(Destroy{{model_class}} $request, {{model_class}} ${{model_item}})
     {
-        (new ParentController())->destroy($request, $%model_item%);
+        (new ParentController())->destroy($request, ${{model_item}});
 
-        $request->session()->flash('success', '%model_confirmation% deleted.');
+        $request->session()->flash('success', '{{model_confirmation}} deleted.');
 
         return redirect()->back();
     }

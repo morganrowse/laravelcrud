@@ -224,11 +224,11 @@ class Generator
         }
 
         $search_replace = [
-            '%namespace%' => rtrim($this->getAppNamespace(), '\\'),
-            '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
-            '%model_fillable_fields%' => $model_fillable_fields,
-            '%model_rule_fields%' => $model_rule_fields,
-            '%model_relationship_functions%' => $model_relationship_functions
+            '{{namespace}}' => rtrim($this->getAppNamespace(), '\\'),
+            '{{model_class}}' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
+            '{{model_fillable_fields}}' => $model_fillable_fields,
+            '{{model_rule_fields}}' => $model_rule_fields,
+            '{{model_relationship_functions}}' => $model_relationship_functions
         ];
 
         return strtr($contents, $search_replace);
@@ -246,8 +246,8 @@ class Generator
         $contents = file_get_contents($this->resource_stub_path . 'resource.stub');
 
         $search_replace = [
-            '%namespace%' => rtrim($this->getAppNamespace(), '\\'),
-            '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => ''])
+            '{{namespace}}' => rtrim($this->getAppNamespace(), '\\'),
+            '{{model_class}}' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => ''])
         ];
 
         return strtr($contents, $search_replace);
@@ -263,8 +263,8 @@ class Generator
         $contents = file_get_contents($this->request_stub_path . 'destroy_request.stub');
 
         $search_replace = [
-            '%namespace%' => $this->getAppNamespace(),
-            '%model_class%' => $this->getClassName(),
+            '{{namespace}}' => $this->getAppNamespace(),
+            '{{model_class}}' => $this->getClassName(),
         ];
 
         return strtr($contents, $search_replace);
@@ -275,8 +275,8 @@ class Generator
         $contents = file_get_contents($this->request_stub_path . 'store_request.stub');
 
         $search_replace = [
-            '%namespace%' => $this->getAppNamespace(),
-            '%model_class%' => $this->getClassName()
+            '{{namespace}}' => $this->getAppNamespace(),
+            '{{model_class}}' => $this->getClassName()
         ];
 
         return strtr($contents, $search_replace);
@@ -287,8 +287,8 @@ class Generator
         $contents = file_get_contents($this->request_stub_path . 'update_request.stub');
 
         $search_replace = [
-            '%namespace%' => $this->getAppNamespace(),
-            '%model_class%' => $this->getClassName()
+            '{{namespace}}' => $this->getAppNamespace(),
+            '{{model_class}}' => $this->getClassName()
         ];
 
         return strtr($contents, $search_replace);
@@ -306,13 +306,13 @@ class Generator
         $contents = file_get_contents($this->controller_stub_path . 'controller.stub');
 
         $search_replace = [
-            '%namespace%' => $this->getAppNamespace(),
-            '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
-            '%view_path%' => strtr($this->model, ['_' => '']),
-            '%model_items%' => $this->model,
-            '%model_item%' => str_singular($this->model),
-            '%model_plural%' => str_plural(str_singular(strtr($this->model, ['_' => ' ']))),
-            '%model_singular%' => str_singular(strtr($this->model, ['_' => ' ']))
+            '{{namespace}}' => $this->getAppNamespace(),
+            '{{model_class}}' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
+            '{{view_path}}' => strtr($this->model, ['_' => '']),
+            '{{model_items}}' => $this->model,
+            '{{model_item}}' => str_singular($this->model),
+            '{{model_plural}}' => str_plural(str_singular(strtr($this->model, ['_' => ' ']))),
+            '{{model_singular}}' => str_singular(strtr($this->model, ['_' => ' ']))
         ];
 
         return strtr($contents, $search_replace);
@@ -330,14 +330,14 @@ class Generator
         $contents = file_get_contents($this->view_controller_stub_path . 'controller.stub');
 
         $search_replace = [
-            '%namespace%' => $this->getAppNamespace(),
-            '%model_class%' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
-            '%view_path%' => strtr($this->model, ['_' => '']),
-            '%model_items%' => $this->model,
-            '%model_item%' => str_singular($this->model),
-            '%model_plural%' => str_plural(str_singular(strtr($this->model, ['_' => ' ']))),
-            '%model_singular%' => str_singular(strtr($this->model, ['_' => ' '])),
-            '%model_confirmation%' => ucfirst(str_singular(strtr($this->model, ['_' => ' '])))
+            '{{namespace}}' => $this->getAppNamespace(),
+            '{{model_class}}' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
+            '{{view_path}}' => strtr($this->model, ['_' => '']),
+            '{{model_items}}' => $this->model,
+            '{{model_item}}' => str_singular($this->model),
+            '{{model_plural}}' => str_plural(str_singular(strtr($this->model, ['_' => ' ']))),
+            '{{model_singular}}' => str_singular(strtr($this->model, ['_' => ' '])),
+            '{{model_confirmation}}' => ucfirst(str_singular(strtr($this->model, ['_' => ' '])))
         ];
 
         return strtr($contents, $search_replace);
@@ -364,9 +364,9 @@ class Generator
         }
 
         $search_replace = [
-            '%model_singular%' => strtr(str_singular($this->model), ['_' => ' ']),
-            '%model_form_fields%' => $model_form_fields,
-            '%model_store_route%' => strtr($this->model, ['_' => '']) . '.store',
+            '{{model_singular}}' => strtr(str_singular($this->model), ['_' => ' ']),
+            '{{model_form_fields}}' => $model_form_fields,
+            '{{model_store_route}}' => strtr($this->model, ['_' => '']) . '.store',
         ];
 
         return strtr($contents, $search_replace);
@@ -388,10 +388,10 @@ class Generator
         }
 
         $search_replace = [
-            '%model_singular%' => strtr(str_singular($this->model), ['_' => ' ']),
-            '%model_item%' => str_singular($this->model),
-            '%model_form_fields%' => $model_form_fields,
-            '%model_update_route%' => strtr($this->model, ['_' => '']) . '.update',
+            '{{model_singular}}' => strtr(str_singular($this->model), ['_' => ' ']),
+            '{{model_item}}' => str_singular($this->model),
+            '{{model_form_fields}}' => $model_form_fields,
+            '{{model_update_route}}' => strtr($this->model, ['_' => '']) . '.update',
         ];
 
         return strtr($contents, $search_replace);
@@ -441,12 +441,12 @@ class Generator
         $model_item_table_row .= PHP_EOL . $this->insertTab(10) . '<td>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.show\',$' . $model_item . '->id)}}">View</a>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.edit\',$' . $model_item . '->id)}}">Edit</a>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="#" onclick="event.preventDefault(); document.getElementById(\'delete_' . $this->model . '_form-{{$' . $model_item . '->id}}\').submit();">Delete</a>' . PHP_EOL . $this->insertTab(11) . '<form id="delete_' . $this->model . '_form-{{$' . $model_item . '->id}}" method="POST" action="{{route(\'' . strtr($this->model, ['_' => '']) . '.destroy\',$' . $model_item . ')}}">' . PHP_EOL . $this->insertTab(12) . '{{method_field(\'DELETE\')}}' . PHP_EOL . $this->insertTab(12) . '{{csrf_field()}}' . PHP_EOL . $this->insertTab(11) . '</form>' . PHP_EOL . $this->insertTab(10) . '</td>';
 
         $search_replace = [
-            '%model_plural%' => $model_plural,
-            '%model_create_route%' => strtr($this->model, ['_' => '']) . '.create',
-            '%model_items%' => '$' . $model_items,
-            '%model_item%' => '$' . $model_item,
-            '%model_table_head%' => $model_table_head,
-            '%model_item_table_row%' => $model_item_table_row,
+            '{{model_plural}}' => $model_plural,
+            '{{model_create_route}}' => strtr($this->model, ['_' => '']) . '.create',
+            '{{model_items}}' => '$' . $model_items,
+            '{{model_item}}' => '$' . $model_item,
+            '{{model_table_head}}' => $model_table_head,
+            '{{model_item_table_row}}' => $model_item_table_row,
         ];
 
         return strtr($contents, $search_replace);
@@ -463,9 +463,9 @@ class Generator
         }
 
         $search_replace = [
-            '%model_singular%' => ucfirst(strtr(str_singular($this->model), ['_' => ' '])),
-            '%model_item%' => '$' . str_singular($this->model),
-            '%model_fields%' => $model_fields
+            '{{model_singular}}' => ucfirst(strtr(str_singular($this->model), ['_' => ' '])),
+            '{{model_item}}' => '$' . str_singular($this->model),
+            '{{model_fields}}' => $model_fields
         ];
 
         return strtr($contents, $search_replace);

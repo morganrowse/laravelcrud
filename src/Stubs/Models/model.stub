@@ -1,10 +1,10 @@
 <?php
 
-namespace %namespace%;
+namespace {{namespace}};
 
 use Illuminate\Database\Eloquent\Model;
 
-class %model_class% extends Model
+class {{model_class}} extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -12,7 +12,7 @@ class %model_class% extends Model
      * @var array
      */
     protected $fillable = [
-        %model_fillable_fields%
+        {{model_fillable_fields}}
     ];
 
     /**
@@ -21,8 +21,8 @@ class %model_class% extends Model
      * @var array
      */
     public static $rules = [
-        %model_rule_fields%
+        {{model_rule_fields}}
     ];
 
-    %model_relationship_functions%
+    {{model_relationship_functions}}
 }

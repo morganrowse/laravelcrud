@@ -1,26 +1,26 @@
 @extends('layouts.app')
 
-@section('title', '%model_plural%')
+@section('title', '{{model_plural}}')
 
 @section('content')
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">%model_plural% <a class="float-right" href="{{route('%model_create_route%')}}">New..</a></div>
+                    <div class="card-header">{{model_plural}} <a class="float-right" href="{{route('{{model_create_route}}')}}">New..</a></div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    %model_table_head%
+                                    {{model_table_head}}
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse(%model_items% as %model_item%)
+                                @forelse({{model_items}} as {{model_item}})
                                     <tr>
-                                        %model_item_table_row%
+                                        {{model_item_table_row}}
                                     </tr>
                                 @empty
                                     <tr>
