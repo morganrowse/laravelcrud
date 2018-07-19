@@ -10,22 +10,23 @@ class Generator
     use DetectsApplicationNamespace;
 
     protected $model;
-    protected $controller_stub_path;
-    protected $view_controller_stub_path;
-    protected $model_stub_path;
-    protected $request_stub_path;
-    protected $resource_stub_path;
-    protected $view_stub_path;
-    protected $controller_path;
-    protected $view_controller_path;
-    protected $model_path;
-    protected $request_path;
-    protected $resource_path;
-    protected $view_path;
-    protected $component_path;
-    protected $ignored_fields;
+    protected $controllerStubPath;
+    protected $viewControllerStubPath;
+    protected $modelStubPath;
+    protected $requestStubPath;
+    protected $resourceStubPath;
+    protected $viewStubPath;
+    protected $componentStubPath;
+    protected $controllerPath;
+    protected $viewControllerPath;
+    protected $modelPath;
+    protected $requestPath;
+    protected $resourcePath;
+    protected $viewPath;
+    protected $componentPath;
+    protected $ignoredFields;
     protected $files;
-    protected $indent_count;
+    protected $indentCount;
     protected $schema;
 
     public function __construct($model)
@@ -33,24 +34,25 @@ class Generator
         $this->model = $model;
 
         //set paths for stubbed resources
-        $this->controller_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Controllers/');
-        $this->view_controller_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Controllers/View/');
-        $this->model_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Models/');
-        $this->request_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Requests/');
-        $this->resource_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Resources/');
-        $this->view_stub_path = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Views/');
+        $this->controllerStubPath = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Controllers/');
+        $this->viewControllerStubPath = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Controllers/View/');
+        $this->modelStubPath = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Models/');
+        $this->requestStubPath = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Requests/');
+        $this->resourceStubPath = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Resources/');
+        $this->viewStubPath = base_path('vendor/morganrowse/laravelcrud/src/Stubs/Views/');
+        $this->componentStubPath = base_path('vendor/morganrowse/laravelcrud/src/resources/views/components/');
 
         //set paths for generated resources
-        $this->controller_path = app_path('Http/Controllers/');
-        $this->view_controller_path = app_path('Http/Controllers/View/');
-        $this->model_path = app_path() . '/';
-        $this->request_path = app_path('Http/Requests/');
-        $this->resource_path = app_path('Http/Resources/');
-        $this->view_path = resource_path('views/' . strtr($this->model, ['_' => '']) . '/');
-        $this->component_path = resource_path('views/components/');
+        $this->controllerPath = app_path('Http/Controllers/');
+        $this->viewControllerPath = app_path('Http/Controllers/View/');
+        $this->modelPath = app_path() . '/';
+        $this->requestPath = app_path('Http/Requests/');
+        $this->resourcePath = app_path('Http/Resources/');
+        $this->viewPath = resource_path('views/' . strtr($this->model, ['_' => '']) . '/');
+        $this->componentPath = resource_path('views/components/');
 
         //set ignored database columns
-        $this->ignored_fields = [
+        $this->ignoredFields = [
             'id',
             'created_at',
             'updated_at',
@@ -59,21 +61,21 @@ class Generator
 
         //set paths for all generated resources
         $this->files = [
-            $this->view_path . 'create.blade.php',
-            $this->view_path . 'edit.blade.php',
-            $this->view_path . 'index.blade.php',
-            $this->view_path . 'show.blade.php',
-            $this->controller_path . $this->getClassName() . 'Controller.php',
-            $this->view_controller_path . $this->getClassName() . 'Controller.php',
-            $this->model_path . $this->getClassName() . '.php',
-            $this->resource_path . $this->getClassName() . 'Resource.php',
-            $this->request_path . 'Destroy' . $this->getClassName() . '.php',
-            $this->request_path . 'Store' . $this->getClassName() . '.php',
-            $this->request_path . 'Update' . $this->getClassName() . '.php'
+            $this->viewPath . 'create.blade.php',
+            $this->viewPath . 'edit.blade.php',
+            $this->viewPath . 'index.blade.php',
+            $this->viewPath . 'show.blade.php',
+            $this->controllerPath . $this->getClassName() . 'Controller.php',
+            $this->viewControllerPath . $this->getClassName() . 'Controller.php',
+            $this->modelPath . $this->getClassName() . '.php',
+            $this->resourcePath . $this->getClassName() . 'Resource.php',
+            $this->requestPath . 'Destroy' . $this->getClassName() . '.php',
+            $this->requestPath . 'Store' . $this->getClassName() . '.php',
+            $this->requestPath . 'Update' . $this->getClassName() . '.php'
         ];
 
         //set number of spaces for indentation
-        $this->indent_count = 4;
+        $this->indentCount = 4;
     }
 
     public function generate()
@@ -89,27 +91,27 @@ class Generator
 
         $this->makeModel($this->getModelContents());
 
-        $this->makeDirectory($this->resource_path);
+        $this->makeDirectory($this->resourcePath);
         $this->makeResource($this->getResourceContents());
 
-        $this->makeDirectory($this->request_path);
+        $this->makeDirectory($this->requestPath);
         $this->makeRequest('Destroy', $this->getDestroyRequestContents());
         $this->makeRequest('Store', $this->getStoreRequestContents());
         $this->makeRequest('Update', $this->getUpdateRequestContents());
 
-        $this->makeDirectory($this->controller_path);
+        $this->makeDirectory($this->controllerPath);
         $this->makeController($this->getControllerContents());
 
-        $this->makeDirectory($this->view_controller_path);
+        $this->makeDirectory($this->viewControllerPath);
         $this->makeViewController($this->getViewControllerContents());
 
-        $this->makeDirectory($this->view_path);
+        $this->makeDirectory($this->viewPath);
         $this->makeView('create', $this->getCreateViewContents());
         $this->makeView('edit', $this->getEditViewContents());
         $this->makeView('index', $this->getIndexViewContents());
         $this->makeView('show', $this->getShowViewContents());
 
-        $this->makeDirectory($this->component_path);
+        $this->makeDirectory($this->componentPath);
         $this->copyComponents();
     }
 
@@ -120,7 +122,7 @@ class Generator
 
     public function insertTab($count = 1)
     {
-        return str_repeat(str_repeat(' ', $this->indent_count), $count);
+        return str_repeat(str_repeat(' ', $this->indentCount), $count);
     }
 
     public function hasExistingCrud()
@@ -145,7 +147,7 @@ class Generator
 
     public function isIgnoredField($field)
     {
-        return (array_search($field, $this->ignored_fields) !== false);
+        return (array_search($field, $this->ignoredFields) !== false);
     }
 
     public function isRelationField($field)
@@ -189,168 +191,168 @@ class Generator
 
     public function makeModel($contents)
     {
-        file_put_contents($this->model_path . $this->getClassName() . '.php', $contents);
+        file_put_contents($this->modelPath . $this->getClassName() . '.php', $contents);
 
         return null;
     }
 
     public function getModelContents()
     {
-        $contents = file_get_contents($this->model_stub_path . 'model.stub');
+        $contents = file_get_contents($this->modelStubPath . 'model.stub');
 
-        $model_fillable_fields = '';
-        $model_rule_fields = '';
-        $model_relationship_functions = '';
+        $modelFillableFields = '';
+        $modelRuleFields = '';
+        $modelRelationshipFunctions = '';
 
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
-                if ($model_fillable_fields != '') {
-                    $model_fillable_fields .= ',' . PHP_EOL . $this->insertTab(2);
+                if ($modelFillableFields != '') {
+                    $modelFillableFields .= ',' . PHP_EOL . $this->insertTab(2);
                 }
-                $model_fillable_fields .= '\'' . $column->getName() . '\'';
-                if ($model_rule_fields != '') {
-                    $model_rule_fields .= ',' . PHP_EOL . $this->insertTab(2);
+                $modelFillableFields .= '\'' . $column->getName() . '\'';
+                if ($modelRuleFields != '') {
+                    $modelRuleFields .= ',' . PHP_EOL . $this->insertTab(2);
                 }
-                $model_rule_fields .= '\'' . $column->getName() . '\' => \'' . $this->getFieldRules($column) . '\'';
+                $modelRuleFields .= '\'' . $column->getName() . '\' => \'' . $this->getFieldRules($column) . '\'';
             }
 
             if ($this->isRelationField($column->getName())) {
-                if ($model_relationship_functions != '') {
-                    $model_relationship_functions .= PHP_EOL . PHP_EOL . $this->insertTab();
+                if ($modelRelationshipFunctions != '') {
+                    $modelRelationshipFunctions .= PHP_EOL . PHP_EOL . $this->insertTab();
                 }
 
-                $model_relationship_functions .= $this->getModelRelationFunction($column);
+                $modelRelationshipFunctions .= $this->getModelRelationFunction($column);
             }
         }
 
-        $search_replace = [
+        $searchReplace = [
             '{{namespace}}' => rtrim($this->getAppNamespace(), '\\'),
             '{{model_class}}' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
-            '{{model_fillable_fields}}' => $model_fillable_fields,
-            '{{model_rule_fields}}' => $model_rule_fields,
-            '{{model_relationship_functions}}' => $model_relationship_functions
+            '{{model_fillable_fields}}' => $modelFillableFields,
+            '{{model_rule_fields}}' => $modelRuleFields,
+            '{{model_relationship_functions}}' => $modelRelationshipFunctions
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function makeResource($contents)
     {
-        file_put_contents($this->resource_path . $this->getClassName() . 'Resource.php', $contents);
+        file_put_contents($this->resourcePath . $this->getClassName() . 'Resource.php', $contents);
 
         return null;
     }
 
     public function getResourceContents()
     {
-        $contents = file_get_contents($this->resource_stub_path . 'resource.stub');
+        $contents = file_get_contents($this->resourceStubPath . 'resource.stub');
 
-        $search_replace = [
+        $searchReplace = [
             '{{namespace}}' => rtrim($this->getAppNamespace(), '\\'),
             '{{model_class}}' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => ''])
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function makeRequest($request_type, $contents)
     {
-        file_put_contents($this->request_path . '/' . $request_type . $this->getClassName() . '.php', $contents);
+        file_put_contents($this->requestPath . '/' . $request_type . $this->getClassName() . '.php', $contents);
     }
 
     public function getDestroyRequestContents()
     {
-        $contents = file_get_contents($this->request_stub_path . 'destroy_request.stub');
+        $contents = file_get_contents($this->requestStubPath . 'destroy_request.stub');
 
-        $search_replace = [
+        $searchReplace = [
             '{{namespace}}' => $this->getAppNamespace(),
             '{{model_class}}' => $this->getClassName(),
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function getStoreRequestContents()
     {
-        $contents = file_get_contents($this->request_stub_path . 'store_request.stub');
+        $contents = file_get_contents($this->requestStubPath . 'store_request.stub');
 
-        $search_replace = [
+        $searchReplace = [
             '{{namespace}}' => $this->getAppNamespace(),
             '{{model_class}}' => $this->getClassName()
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function getUpdateRequestContents()
     {
-        $contents = file_get_contents($this->request_stub_path . 'update_request.stub');
+        $contents = file_get_contents($this->requestStubPath . 'update_request.stub');
 
-        $search_replace = [
+        $searchReplace = [
             '{{namespace}}' => $this->getAppNamespace(),
             '{{model_class}}' => $this->getClassName()
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function makeController($contents)
     {
-        file_put_contents($this->controller_path . $this->getClassName() . 'Controller.php', $contents);
+        file_put_contents($this->controllerPath . $this->getClassName() . 'Controller.php', $contents);
 
         return null;
     }
 
     public function getControllerContents()
     {
-        $contents = file_get_contents($this->controller_stub_path . 'controller.stub');
+        $contents = file_get_contents($this->controllerStubPath . 'controller.stub');
 
-        $search_replace = [
+        $searchReplace = [
             '{{namespace}}' => $this->getAppNamespace(),
             '{{model_class}}' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
             '{{view_path}}' => strtr($this->model, ['_' => '']),
-            '{{model_items}}' => $this->model,
-            '{{model_item}}' => str_singular($this->model),
+            '{{model_items}}' => camel_case($this->model),
+            '{{model_item}}' => camel_case(str_singular($this->model)),
             '{{model_plural}}' => str_plural(str_singular(strtr($this->model, ['_' => ' ']))),
             '{{model_singular}}' => str_singular(strtr($this->model, ['_' => ' ']))
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function makeViewController($contents)
     {
-        file_put_contents($this->view_controller_path . $this->getClassName() . 'Controller.php', $contents);
+        file_put_contents($this->viewControllerPath . $this->getClassName() . 'Controller.php', $contents);
 
         return null;
     }
 
     public function getViewControllerContents()
     {
-        $contents = file_get_contents($this->view_controller_stub_path . 'controller.stub');
+        $contents = file_get_contents($this->viewControllerStubPath . 'controller.stub');
 
-        $search_replace = [
+        $searchReplace = [
             '{{namespace}}' => $this->getAppNamespace(),
             '{{model_class}}' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
             '{{view_path}}' => strtr($this->model, ['_' => '']),
-            '{{model_items}}' => $this->model,
-            '{{model_item}}' => str_singular($this->model),
+            '{{model_items}}' => camel_case($this->model),
+            '{{model_item}}' => camel_case(str_singular($this->model)),
             '{{model_plural}}' => str_plural(str_singular(strtr($this->model, ['_' => ' ']))),
             '{{model_singular}}' => str_singular(strtr($this->model, ['_' => ' '])),
             '{{model_confirmation}}' => ucfirst(str_singular(strtr($this->model, ['_' => ' '])))
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function makeView($view_type, $contents)
     {
-        file_put_contents($this->view_path . '/' . $view_type . '.blade.php', $contents);
+        file_put_contents($this->viewPath . '/' . $view_type . '.blade.php', $contents);
     }
 
     public function getCreateViewContents()
     {
-        $contents = file_get_contents($this->view_stub_path . 'create.stub');
+        $contents = file_get_contents($this->viewStubPath . 'create.stub');
 
         $model_form_fields = '';
 
@@ -363,18 +365,18 @@ class Generator
             }
         }
 
-        $search_replace = [
+        $searchReplace = [
             '{{model_singular}}' => strtr(str_singular($this->model), ['_' => ' ']),
             '{{model_form_fields}}' => $model_form_fields,
             '{{model_store_route}}' => strtr($this->model, ['_' => '']) . '.store',
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function getEditViewContents()
     {
-        $contents = file_get_contents($this->view_stub_path . 'edit.stub');
+        $contents = file_get_contents($this->viewStubPath . 'edit.stub');
 
         $model_form_fields = '';
 
@@ -387,19 +389,19 @@ class Generator
             }
         }
 
-        $search_replace = [
+        $searchReplace = [
             '{{model_singular}}' => strtr(str_singular($this->model), ['_' => ' ']),
             '{{model_item}}' => str_singular($this->model),
             '{{model_form_fields}}' => $model_form_fields,
             '{{model_update_route}}' => strtr($this->model, ['_' => '']) . '.update',
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function getIndexViewContents()
     {
-        $contents = file_get_contents($this->view_stub_path . 'index.stub');
+        $contents = file_get_contents($this->viewStubPath . 'index.stub');
 
         $model_table_head = '';
         $model_item_table_row = '';
@@ -440,7 +442,7 @@ class Generator
 
         $model_item_table_row .= PHP_EOL . $this->insertTab(10) . '<td>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.show\',$' . $model_item . '->id)}}">View</a>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="{{route(\'' . strtr($this->model, ['_' => '']) . '.edit\',$' . $model_item . '->id)}}">Edit</a>' . PHP_EOL . $this->insertTab(11) . '<a class="btn" href="#" onclick="event.preventDefault(); document.getElementById(\'delete_' . $this->model . '_form-{{$' . $model_item . '->id}}\').submit();">Delete</a>' . PHP_EOL . $this->insertTab(11) . '<form id="delete_' . $this->model . '_form-{{$' . $model_item . '->id}}" method="POST" action="{{route(\'' . strtr($this->model, ['_' => '']) . '.destroy\',$' . $model_item . ')}}">' . PHP_EOL . $this->insertTab(12) . '{{method_field(\'DELETE\')}}' . PHP_EOL . $this->insertTab(12) . '{{csrf_field()}}' . PHP_EOL . $this->insertTab(11) . '</form>' . PHP_EOL . $this->insertTab(10) . '</td>';
 
-        $search_replace = [
+        $searchReplace = [
             '{{model_plural}}' => $model_plural,
             '{{model_create_route}}' => strtr($this->model, ['_' => '']) . '.create',
             '{{model_items}}' => '$' . $model_items,
@@ -449,12 +451,12 @@ class Generator
             '{{model_item_table_row}}' => $model_item_table_row,
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
     public function getShowViewContents()
     {
-        $contents = file_get_contents($this->view_stub_path . 'show.stub');
+        $contents = file_get_contents($this->viewStubPath . 'show.stub');
 
         $model_fields = '';
 
@@ -462,18 +464,18 @@ class Generator
             $model_fields .= '<dt>' . strtr(ucfirst($column->getName()), ['_' => ' ']) . '</dt><dd>{{$' . str_singular($this->model) . '->' . $column->getName() . '}}</dd>';
         }
 
-        $search_replace = [
+        $searchReplace = [
             '{{model_singular}}' => ucfirst(strtr(str_singular($this->model), ['_' => ' '])),
             '{{model_item}}' => '$' . str_singular($this->model),
             '{{model_fields}}' => $model_fields
         ];
 
-        return strtr($contents, $search_replace);
+        return strtr($contents, $searchReplace);
     }
 
-    public function doctrineToHtmlInput($doctrine_type)
+    public function doctrineToHtmlInput($doctrineType)
     {
-        switch ($doctrine_type) {
+        switch ($doctrineType) {
             case 'Integer':
                 return 'number';
                 break;
@@ -484,14 +486,14 @@ class Generator
                 return 'datetime-local';
                 break;
             default:
-                return $doctrine_type;
+                return $doctrineType;
                 break;
         }
     }
 
-    public function doctrineToValidationRuleType($doctrine_type)
+    public function doctrineToValidationRuleType($doctrineType)
     {
-        switch ($doctrine_type) {
+        switch ($doctrineType) {
             case 'Integer':
                 return 'integer';
                 break;
@@ -509,15 +511,13 @@ class Generator
 
     public function copyComponents()
     {
-        $component_path = base_path('vendor/morganrowse/laravelcrud/src/resources/views/components/');
-
         $components = [
             'input',
             'select'
         ];
 
         foreach ($components as $component) {
-            copy($component_path . $component . '.blade.php', $this->component_path . $component . '.blade.php');
+            copy($this->componentStubPath . $component . '.blade.php', $this->componentPath . $component . '.blade.php');
         }
     }
 
