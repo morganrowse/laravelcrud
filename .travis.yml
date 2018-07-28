@@ -3,7 +3,12 @@ language: php
 php:
   - 5.6
 
-before_script:
+before_install
   - cp .env.travis .env
+
+install
   - composer self-update
-  - composer install --no-interaction
+  - composer require squizlabs/php_codesniffer --no-interaction
+ 
+script
+  - php vendor/bin/phpcs --standard=PSR2 src/ -n
