@@ -8,7 +8,7 @@ before_install:
 
 install:
   - composer self-update
-  - composer require squizlabs/php_codesniffer --no-interaction
+  - composer require squizlabs/php_codesniffer --no-interaction --no-suggest
  
 script:
   - php vendor/bin/phpcs --standard=PSR2 src/ -n
