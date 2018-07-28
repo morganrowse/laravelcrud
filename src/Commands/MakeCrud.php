@@ -7,16 +7,31 @@ use MorganRowse\LaravelCrud\Generator;
 
 class MakeCrud extends Command
 {
-    protected $signature = 'make:crud {model : The schema name} {--force}';
+    /**
+     * The console command signature.
+     *
+     * @var string
+     */
+    protected $signature = 'make:crud {model : The schema name} 
+                                      {--F|force}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
     protected $description = 'Generate CRUD from a table schema';
 
+    /**
+     * @Generator
+     */
     protected $generator;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
     public function handle()
     {
         $this->generator = new Generator($this->argument('model'));
