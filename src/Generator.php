@@ -75,7 +75,7 @@ class Generator
         ];
 
         //set number of spaces for indentation
-        $this->indentCount = 4;
+        $this->indentCount = config('laravelcrud.indentCount', 4);
     }
 
     public function generate()
