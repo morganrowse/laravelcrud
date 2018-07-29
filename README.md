@@ -3,6 +3,7 @@
 <a href="https://packagist.org/packages/morganrowse/laravelcrud"><img src="https://img.shields.io/packagist/dt/morganrowse/laravelcrud.svg?style=for-the-badge" alt="Downloads"></a>
 <a href="https://packagist.org/packages/morganrowse/laravelcrud"><img src="https://img.shields.io/packagist/v/morganrowse/laravelcrud.svg?style=for-the-badge" alt="Version"></a>
 <a href="https://travis-ci.org/morganrowse/laravelcrud"><img src="https://img.shields.io/travis/morganrowse/laravelcrud.svg?style=for-the-badge" alt="Travis"></a>
+<a href="https://www.codacy.com/app/morgan.rowse/laravelcrud"><img src="https://img.shields.io/codacy/grade/b996342a8a36472aaed723137cbff2a5.svg?style=for-the-badge" alt="Codacy grade"></a>
 
 This composer package adds artisan commands which create Models, Views, Controllers and Request Validation for crud operation based off of a database table schema.
 
