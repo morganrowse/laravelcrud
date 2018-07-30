@@ -174,37 +174,37 @@ class Generator
     {
         $contents = file_get_contents($this->stubPath->model . 'model.stub');
 
-        $modelFillableFields = '';
-        $modelRuleFields = '';
-        $modelRelationshipFunctions = '';
+        $fillableFields = '';
+        $ruleFields = '';
+        $relationshipFunctions = '';
 
         foreach ($this->schema as $column) {
             if (!$this->isIgnoredField($column->getName())) {
-                if ($modelFillableFields != '') {
-                    $modelFillableFields .= ',' . PHP_EOL . $this->insertTab(2);
+                if ($fillableFields != '') {
+                    $fillableFields .= ',' . PHP_EOL . $this->insertTab(2);
                 }
-                $modelFillableFields .= '\'' . $column->getName() . '\'';
-                if ($modelRuleFields != '') {
-                    $modelRuleFields .= ',' . PHP_EOL . $this->insertTab(2);
+                $fillableFields .= '\'' . $column->getName() . '\'';
+                if ($ruleFields != '') {
+                    $ruleFields .= ',' . PHP_EOL . $this->insertTab(2);
                 }
-                $modelRuleFields .= '\'' . $column->getName() . '\' => \'' . $this->getFieldRules($column) . '\'';
+                $ruleFields .= '\'' . $column->getName() . '\' => \'' . $this->getFieldRules($column) . '\'';
             }
 
             if ($this->isRelationField($column->getName())) {
-                if ($modelRelationshipFunctions != '') {
-                    $modelRelationshipFunctions .= PHP_EOL . PHP_EOL . $this->insertTab();
+                if ($relationshipFunctions != '') {
+                    $relationshipFunctions .= PHP_EOL . PHP_EOL . $this->insertTab();
                 }
 
-                $modelRelationshipFunctions .= $this->getModelRelationFunction($column);
+                $relationshipFunctions .= $this->getModelRelationFunction($column);
             }
         }
 
         $searchReplace = [
             '{{namespace}}' => rtrim($this->getAppNamespace(), '\\'),
             '{{model_class}}' => strtr(str_singular(ucwords(strtr($this->model, ['_' => ' ']))), [' ' => '']),
-            '{{model_fillable_fields}}' => $modelFillableFields,
-            '{{model_rule_fields}}' => $modelRuleFields,
-            '{{model_relationship_functions}}' => $modelRelationshipFunctions,
+            '{{fillable_fields}}' => $fillableFields,
+            '{{rule_fields}}' => $ruleFields,
+            '{{relationship_functions}}' => $relationshipFunctions,
         ];
 
         return strtr($contents, $searchReplace);
