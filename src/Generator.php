@@ -84,7 +84,7 @@ class Generator
 
         if ($this->tableExists()) {
             echo 'Table: ' . $this->model . ' does not exist.';
-            die();
+            return;
         }
 
         //dd($this->schema);

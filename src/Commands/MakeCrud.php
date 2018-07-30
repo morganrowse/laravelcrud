@@ -43,7 +43,7 @@ class MakeCrud extends Command
         }
 
         if ($this->generator->hasExistingCrud()) {
-            $this->error('CRUD already exists!');
+            $this->error('CRUD already exists! Use --force to overwrite existing CRUD');
             $this->line('Use --force to overwrite existing CRUD');
             return;
         } else {
